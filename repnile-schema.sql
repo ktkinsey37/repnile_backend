@@ -20,22 +20,28 @@ CREATE TABLE users (
 
 CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
-  name TEXT,
-  species TEXT,
+  name TEXT DEFAULT "",
+  species TEXT DEFAULT "",
+  weight INTEGER DEFAULT 0 CHECK(weight > 0),
   age INTEGER CHECK (age >= 0),
-  sex TEXT,
-  coloration_pattern TEXT,
-  primary_color TEXT,
-  secondary_color TEXT,
+  sex TEXT DEFAULT "",
+  coloration_pattern TEXT DEFAULT "",
+  primary_color TEXT DEFAULT "",
+  secondary_color TEXT DEFAULT "",
   price INTEGER CHECK (price >= 0),
   for_sale BOOLEAN NOT NULL DEFAULT false,
+  img_url TEXT DEFAULT ""
 );
 -- Animals are defaulted to not for sale
 
-CREATE TABLE parent-children (
+CREATE TABLE parent_children (
     parent_id INTEGER
       REFERENCES animals ON DELETE CASCADE,
     child_id INTEGER
       REFERENCES animals ON DELETE CASCADE,
     PRIMARY KEY (parent_id, child_id)
 );
+
+-- CREATE TABLE message-threads (
+
+-- );
