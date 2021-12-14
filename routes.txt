@@ -1,0 +1,55 @@
+
+
+POST /auth/token > {username: password} returns jwt token
+POST /auth/register > ADMIN ONLY {username : password : email : isAdmin defaults to yes?} allows an admin to register a new user
+
+GET /animals > returns all animals (filter search allowed)
+POST /animals > adds an animal
+GET /animals/:id > returns particular animal
+PUT animals/:id > alters an animal
+DELETE /animals/:id > obvious
+
+GET /items > returns all items (filter search allowed)
+POST /items > adds an item
+GET /items/:id > returns particular item
+PUT items/:id > alters an item
+DELETE /items/:id > obvious
+
+GET /messages > ADMIN ONLY returns all message threads
+POST /messages > starts a messages thread, returns a unique uuid
+GET /messages/:id > returns that messages thread
+POST /messages/:id > adds message to that thread
+GET /message-threads > returns an array
+
+
+Messages in DB are represented by a TO id and FROM id
+
+TODO: -on admin side be able to respond to message threads and view when they are new messages, update in the db when messages are responded to
+-last checked up updated when an admin checks this message
+
+[
+  {
+    id: uuid,
+    headerMessage:"asdsadsad",
+    notify:true/false,
+  }
+  ,
+  {
+
+  }
+
+]
+
+GET /message-threads/:id
+[
+  {
+    from:"user"|"admin",
+    message:"",
+    sentAt:
+  },
+  {
+
+  }
+]
+POST /message-threads/:id/checked //insure admin
+UPDATE message-threads where id=$1 set last_checked_at= NOW

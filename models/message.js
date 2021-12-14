@@ -6,43 +6,34 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for animals */
 
-class Animal {
+class Message {
 
   /** Create an animal (from input form data), update the db, return animal.
    * 
    */
 
-  static async create({ name,
-                        species,
-                        weight,
-                        age,
-                        sex,
-                        colorationPattern,
-                        primaryColor,
-                        secondaryColor,
-                        price,
-                        forSale,
-                        imgUrl }) {
+  static async create({ from, to, messageText, messageThreadId=undefined }) {
+
+    // If there's a messageThread supplied, pull it from the database so we can update it.
+    if (messageThreadId){
+
+    }
+
+    // If there isn't a messageThreadId, create one
+    else if (!messageThreadId){
+
+    }
 
     const result = await db.query(
-          `INSERT INTO animals
-           (name, species, weight, age, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING id, name, species, weight, age, sex, coloration_pattern AS "colorationPattern",
-                     primary_color AS "primaryColor", secondary_color AS "secondaryColor",
-                     price, for_sale AS "forSale", img_url AS "imgUrl"`,
+          `INSERT INTO messages
+           (from, to, message_text, message_thread_id)
+           VALUES ($1, $2, $3, $4)
+           RETURNING id, from, to, message_text AS "messageText", message_thread_id AS "messageThreadId`,
         [
-          name,
-          species,
-          weight,
-          age,
-          sex,
-          colorationPattern,
-          primaryColor,
-          secondaryColor,
-          price,
-          forSale,
-          imgUrl
+          from,
+          to,
+          messageText,
+          messageThreadId
         ],
     );
     const animal = result.rows[0];
@@ -50,24 +41,7 @@ class Animal {
     return animal;
   }
 
-  /** Find all animals (optional filter on searchFilters).
-   *
-   * searchFilters (all optional):
-   * - name
-   * - species
-   * - weight
-   * - age
-   * - sex
-   * - coloration pattern
-   * - primary color
-   * - secondary color
-   * - price
-   * - for sale
-   * 
-   * Returns list of animal objects [{ name, species, weight, age, sex, colorationPattern, primaryColor, secondaryColor, price, forSale }, ...]
-   * */
-
-  static async findAll(searchFilters = {}) {
+  static async getMessageThread(messageThreadId) {
     let query = `SELECT id,
                         name,
                         species,

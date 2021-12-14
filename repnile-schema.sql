@@ -35,13 +35,26 @@ CREATE TABLE animals (
 -- Animals are defaulted to not for sale
 
 CREATE TABLE parent_children (
-    parent_id INTEGER
-      REFERENCES animals ON DELETE CASCADE,
-    child_id INTEGER
-      REFERENCES animals ON DELETE CASCADE,
-    PRIMARY KEY (parent_id, child_id)
+  parent_id INTEGER
+    REFERENCES animals ON DELETE CASCADE,
+  child_id INTEGER
+    REFERENCES animals ON DELETE CASCADE,
+  PRIMARY KEY (parent_id, child_id)
 );
 
--- CREATE TABLE message-threads (
+CREATE TABLE message_threads (
+  uuid TEXT PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+);
 
--- );
+CREATE TABLE messages (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  from TEXT,
+  to TEXT,
+  message_text TEXT,
+  message_thread_id INTEGER
+    REFERENCES message-threads ON DELETE CASCADE
+)
