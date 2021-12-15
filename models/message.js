@@ -28,7 +28,7 @@ class Message {
           `INSERT INTO messages
            (from, to, message_text, message_thread_id)
            VALUES ($1, $2, $3, $4)
-           RETURNING id, from, to, message_text AS "messageText", message_thread_id AS "messageThreadId`,
+           RETURNING id, created_at AS "createdAt", from, to, message_text AS "messageText", message_thread_id AS "messageThreadId`,
         [
           from,
           to,
