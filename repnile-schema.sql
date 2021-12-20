@@ -1,5 +1,6 @@
 DROP DATABASE repnile;
 CREATE DATABASE repnile;
+\c repnile;
 DROP TABLE items;
 DROP TABLE animals CASCADE;
 DROP TABLE users;
@@ -27,11 +28,14 @@ CREATE TABLE users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+-- $2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy is "password" properly hashed
+INSERT INTO users (username, password, email, is_admin) VALUES ('test', '$2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy', 'email@email.com', true);
+
 CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
   name TEXT DEFAULT '',
   species TEXT DEFAULT '',
-  weight INTEGER DEFAULT 0 CHECK(weight > 0),
+  weight INTEGER DEFAULT 0 CHECK (weight > 0),
   age INTEGER CHECK (age >= 0),
   sex TEXT DEFAULT '',
   coloration_pattern TEXT DEFAULT '',
@@ -52,7 +56,7 @@ CREATE TABLE parent_children (
 );
 
 CREATE TABLE message_threads (
-  uuid TEXT PRIMARY KEY,
+  uuid TEXT PRIMARY KEY NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   last_checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -61,8 +65,8 @@ CREATE TABLE message_threads (
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  from_ TEXT,
-  to_ TEXT,
+  sender TEXT,
+  recipient TEXT,
   message_text TEXT,
   message_thread_id TEXT
     REFERENCES message_threads ON DELETE CASCADE

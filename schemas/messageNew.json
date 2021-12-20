@@ -3,28 +3,25 @@
     "$id": "http://our.company.com/companyNew.schema.json",
     "type": "object",
     "properties": {
-      "from": {
+      "sender": {
         "type": "string",
         "minLength": 1
       },
-      "to": {
+      "recipient": {
         "type": "string",
         "minLength": 1
       },
-      "message_text": {
-        "type": "integer",
-        "minimum": 0
+      "messageText": {
+        "type": "string",
+        "minLength": 1
       },
-      "message_thread_id": {
+      "messageThreadId": {
         "type": "string",
         "minLength": 1
       }
     },
     "additionalProperties": false,
     "required": [
-      "name",
-      "handle",
-      "description"
     ]
   }
   

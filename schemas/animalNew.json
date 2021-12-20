@@ -27,7 +27,7 @@
       "type": "integer",
       "minimum": 0
     },
-    "coloration": {
+    "colorationPattern": {
       "type": "string",
       "minLength": 1
     },
@@ -43,14 +43,10 @@
       "type": "boolean"
     },
     "imgUrl": {
-      "type": "string",
-      "format": "uri"
+      "type": "string"
     }
   },
   "additionalProperties": false,
   "required": [
-    "name",
-    "handle",
-    "description"
   ]
 }

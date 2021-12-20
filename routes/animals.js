@@ -10,6 +10,7 @@ const { ensureAdmin } = require("../middleware/auth");
 const Animal = require("../models/animal");
 
 const animalSearchSchema = require("../schemas/animalSearch.json");
+const animalNewSchema = require("../schemas/animalNew.json");
 
 const router = new express.Router();
 
@@ -25,7 +26,7 @@ const router = new express.Router();
 
 router.post("/", ensureAdmin, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, companyNewSchema);
+    const validator = jsonschema.validate(req.body, animalNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);

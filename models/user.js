@@ -75,14 +75,11 @@ class User {
             password,
             email,
             is_admin)
-           VALUES ($1, $2, $3, $4, $5, $6)
-          //  Add this to line below to add names { first_name AS "firstName", last_name AS "lastName",}
+           VALUES ($1, $2, $3, $4)
            RETURNING username, email, is_admin AS "isAdmin"`,
         [
           username,
           hashedPassword,
-          firstName,
-          lastName,
           email,
           isAdmin,
         ],

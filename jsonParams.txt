@@ -1,0 +1,15 @@
+AUTH JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2NDAwMzIwMDh9.SZLPDlzpFQEvOBM1jlBtlLrqG97eyDvRxMgc5VTbqEw
+
+{
+	"name": "lizard",
+	"species": "gecko",
+	"weight": "1.2 oz",
+	"sex": "male",
+	"age": "2",
+	"price": "1.5",
+	"colorationPattern": "spotted",
+	"primaryColor": "white",
+	"secondaryColor": "red",
+	"forSale": "true",
+	"imgUrl": "www.google.com"
+}

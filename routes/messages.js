@@ -1,6 +1,5 @@
 "use strict";
 
-/** Routes for companies. */
 
 // import { v4 as uuid } from "uuid";
 const MessageThread = require("../models/messageThread");
@@ -15,15 +14,6 @@ const messageNewSchema = require("../schemas/messageNew.json");
 
 const router = new express.Router();
 
-
-/** POST / { company } =>  { company }
- *
- * company should be { handle, name, description, numEmployees, logoUrl }
- *
- * Returns { handle, name, description, numEmployees, logoUrl }
- *
- * Authorization required: admin
- */
 
 router.post("/", ensureAdmin, async function (req, res, next) {
   try {
@@ -40,16 +30,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
-/** GET /  =>
- *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
- *
- * Can filter on provided search filters:
- * - minEmployees
- * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
- *
- * Authorization required: none
- */
+
 
 router.get("/", ensureAdmin, async function (req, res, next) {
   // const q = req.query;
@@ -58,8 +39,8 @@ router.get("/", ensureAdmin, async function (req, res, next) {
   // const messagesRes = await Message.
 
   try {
-    const messages = await Company.findAll();
-    return res.json({ companies });
+    const messages = await Message.getAllMessages();
+    return res.json({ messages });
   } catch (err) {
     return next(err);
   }
@@ -84,7 +65,7 @@ router.get("/:id", async function (req, res, next) {
 
 router.post("/:id", async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, companyUpdateSchema);
+    const validator = jsonschema.validate(req.body, messageNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);

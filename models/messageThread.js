@@ -18,14 +18,13 @@ class MessageThread {
           `INSERT INTO message_threads
            (uuid)
            VALUES ($1)
-           RETURNING id, created_at AS "createdAt", updated_at AS "updatedAt", last_checked_at AS "lastCheckedAt"`,
+           RETURNING uuid, created_at AS "createdAt", updated_at AS "updatedAt", last_checked_at AS "lastCheckedAt"`,
         [
           uuid
         ],
     );
-    const messageThread = result.rows[0];
 
-    return messageThread;
+    return result;
   }
 
   /** Given an animal id, return data about that particular animal.
@@ -44,15 +43,15 @@ class MessageThread {
                   updated_at AS "updatedAt",
                   last_checked_at AS "lastCheckedAt"
            FROM message_threads
-           WHERE id = $1`,
+           WHERE uuid = $1`,
         [uuid]);
 
     const messageThread = res.rows[0];
 
-    if (!messageThread) throw new NotFoundError(`No such thread keyed to uuid: ${uuid}`);
+    if (!messageThread) return undefined;
 
     const messagesRes = await db.query(
-          `SELECT id, created_at AS "createdAt", from, to, message_text AS "messageText"
+          `SELECT id, created_at AS "createdAt", sender, recipient, message_text AS "messageText"
            FROM messages
            WHERE message_thread_id = $1
            ORDER BY id`,
