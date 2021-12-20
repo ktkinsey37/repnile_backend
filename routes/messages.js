@@ -2,16 +2,16 @@
 
 /** Routes for companies. */
 
+// import { v4 as uuid } from "uuid";
+const MessageThread = require("../models/messageThread");
+const Message = require("../models/message");
 const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
-const Company = require("../models/company");
 
-const companyNewSchema = require("../schemas/companyNew.json");
-const companyUpdateSchema = require("../schemas/companyUpdate.json");
-const companySearchSchema = require("../schemas/companySearch.json");
+const messageNewSchema = require("../schemas/messageNew.json");
 
 const router = new express.Router();
 
@@ -27,14 +27,14 @@ const router = new express.Router();
 
 router.post("/", ensureAdmin, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, companyNewSchema);
+    const validator = jsonschema.validate(req.body, messageNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const company = await Company.create(req.body);
-    return res.status(201).json({ company });
+    const message = await Message.create(req.body);
+    return res.status(201).json({ message });
   } catch (err) {
     return next(err);
   }
@@ -51,20 +51,14 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  * Authorization required: none
  */
 
-router.get("/", async function (req, res, next) {
-  const q = req.query;
+router.get("/", ensureAdmin, async function (req, res, next) {
+  // const q = req.query;
   // arrive as strings from querystring, but we want as ints
-  if (q.minEmployees !== undefined) q.minEmployees = +q.minEmployees;
-  if (q.maxEmployees !== undefined) q.maxEmployees = +q.maxEmployees;
+  
+  // const messagesRes = await Message.
 
   try {
-    const validator = jsonschema.validate(q, companySearchSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
-
-    const companies = await Company.findAll(q);
+    const messages = await Company.findAll();
     return res.json({ companies });
   } catch (err) {
     return next(err);
@@ -79,10 +73,27 @@ router.get("/", async function (req, res, next) {
  * Authorization required: none
  */
 
-router.get("/:handle", async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
   try {
-    const company = await Company.get(req.params.handle);
-    return res.json({ company });
+    const messageThread = await MessageThread.getThreadAndMessages(req.params.id)
+    return res.json({ messageThread });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.post("/:id", async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, companyUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    
+    const message = await Message.create(req.params.from, req.params.to, req.params.text, req.params.uuid)
+    const messageThread = await MessageThread.getThreadAndMessages(message.uuid);
+    return res.json({ messageThread });
   } catch (err) {
     return next(err);
   }
@@ -99,7 +110,7 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: admin
  */
 
-router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+router.patch("/:id", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, companyUpdateSchema);
     if (!validator.valid) {
@@ -114,19 +125,19 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
   }
 });
 
-/** DELETE /[handle]  =>  { deleted: handle }
- *
- * Authorization: admin
- */
+// /** DELETE /[handle]  =>  { deleted: handle }
+//  *
+//  * Authorization: admin
+//  */
 
-router.delete("/:handle", ensureAdmin, async function (req, res, next) {
-  try {
-    await Company.remove(req.params.handle);
-    return res.json({ deleted: req.params.handle });
-  } catch (err) {
-    return next(err);
-  }
-});
+// router.delete("/:handle", ensureAdmin, async function (req, res, next) {
+//   try {
+//     await Company.remove(req.params.handle);
+//     return res.json({ deleted: req.params.handle });
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 
 module.exports = router;

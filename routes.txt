@@ -15,11 +15,14 @@ GET /items/:id > returns particular item
 PUT items/:id > alters an item
 DELETE /items/:id > obvious
 
-GET /messages > ADMIN ONLY returns all message threads
+GET /messages > ADMIN ONLY returns all message threads (first 100?, sort by alerted ones)
 POST /messages > starts a messages thread, returns a unique uuid
 GET /messages/:id > returns that messages thread
 POST /messages/:id > adds message to that thread
+PUT /messages/:id > says that the message thread has been checked
+
 GET /message-threads > returns an array
+GET /messages/alerts
 
 
 Messages in DB are represented by a TO id and FROM id

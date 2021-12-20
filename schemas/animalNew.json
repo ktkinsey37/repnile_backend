@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://our.company.com/companyNew.schema.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "species": {
+      "type": "string",
+      "minLength": 1
+    },
+    "weight": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "price": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "coloration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "primaryColor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "secondaryColor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "forSale": {
+      "type": "boolean"
+    },
+    "imgUrl": {
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "handle",
+    "description"
+  ]
+}

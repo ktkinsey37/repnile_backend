@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://our.company.com/companySearch.schema.json",
+  "type": "object",
+  "properties": {
+    "minWeight": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "maxWeight": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "species": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sex": {
+      "type": "string",
+      "minLength": 1
+    },
+    "minAge": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "maxAge": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "minPrice": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "maxPrice": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "coloration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "primaryColor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "secondaryColor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "forSale": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

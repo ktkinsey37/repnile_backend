@@ -95,11 +95,11 @@ class Animal {
       throw new BadRequestError("Min weight cannot be greater than or equal to max");
     }
 
-    if (minAge > maxAge) {
+    if (minAge >= maxAge) {
       throw new BadRequestError("Min age cannot be greater than or equal to max");
     }
 
-    if (minPrice > maxPrice) {
+    if (minPrice >= maxPrice) {
       throw new BadRequestError("Min price cannot be greater than or equal to max");
     }
 
@@ -211,19 +211,19 @@ class Animal {
 
     const animal = animalRes.rows[0];
 
-    if (!animal) throw new NotFoundError(`No such animal`);
+    if (!animal) throw new NotFoundError(`No such animal with id: ${id}`);
 
-    const jobsRes = await db.query(
-          `SELECT id, title, salary, equity
-           FROM jobs
-           WHERE company_handle = $1
-           ORDER BY id`,
-        [handle],
-    );
+    // const jobsRes = await db.query(
+    //       `SELECT id, title, salary, equity
+    //        FROM jobs
+    //        WHERE company_handle = $1
+    //        ORDER BY id`,
+    //     [handle],
+    // );
 
-    company.jobs = jobsRes.rows;
+    // company.jobs = jobsRes.rows;
 
-    return company;
+    // return company;
   }
 
   static async findParents(id){

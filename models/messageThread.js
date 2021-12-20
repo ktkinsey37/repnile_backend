@@ -84,6 +84,25 @@ class MessageThread {
       const messageThread = res.rows[0];
   }
 
+  static async getAllThreads(){
+    const res = await db.query(
+      `SELECT uuid,
+              created_at AS "createdAt",
+              updated_at AS "updatedAt",
+              last_checked_at AS "lastCheckedAt"
+       FROM message_threads
+       ORDER BY created_at ASC`);
+
+  }
+
+  static async getUncheckedMessageThreads(){
+    const res = await db.query(
+      `SELECT * FROM message_threads
+      WHERE updated_at > last_checked_at
+      ORDER BY updated_at ASC`
+    )
+  }
+
   static async remove(uuid) {
     const result = await db.query(
           `DELETE

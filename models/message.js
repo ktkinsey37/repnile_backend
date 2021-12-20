@@ -3,28 +3,35 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const MessageThread = require("./messageThread");
 
-/** Related functions for animals */
+/** Related functions for messages */
 
 class Message {
 
-  /** Create an animal (from input form data), update the db, return animal.
+  /** Receive a message, check if a message thread already exists for it.
+   * If not, create a message thread, if so, retrieve the existing one.
+   * Create the message, linked to the message thread, and return the messagethread and message.
    * 
    */
 
-  static async create({ from, to, messageText, messageThreadId=undefined }) {
+  static async create({ from, to, messageText, messageThreadId }) {
 
-    // If there's a messageThread supplied, pull it from the database so we can update it.
-    if (messageThreadId){
+    // Try to pull the message thread to either update it if exists, create it if not
 
+    const messageThreadRes = await MessageThread.getThreadAndMessages(messageThreadId)
+
+    let messageThread;
+
+    messageThread = messageThreadRes.rows[0]
+    
+    if (!messageThread){
+      const createThreadRes = await MessageThread.create(messageThreadId)
+      messageThread = createThreadRes.rows[0]
+      messageThreadId = messageThread.uuid
     }
 
-    // If there isn't a messageThreadId, create one
-    else if (!messageThreadId){
-
-    }
-
-    const result = await db.query(
+    const messageResult = await db.query(
           `INSERT INTO messages
            (from, to, message_text, message_thread_id)
            VALUES ($1, $2, $3, $4)
@@ -36,264 +43,48 @@ class Message {
           messageThreadId
         ],
     );
-    const animal = result.rows[0];
+    const message = messageResult.rows[0];
 
-    return animal;
+    messageThread.messages = [message]
+
+    return messageThread;
   }
 
-  static async getMessageThread(messageThreadId) {
-    let query = `SELECT id,
-                        name,
-                        species,
-                        weight,
-                        age,
-                        sex,
-                        coloration_pattern AS "colorationPattern",
-                        primary_color AS "primaryColor",
-                        secondary_color AS "secondaryColor",
-                        price,
-                        for_sale AS "forSale",
-                        img_url AS "imgUrl"
-                 FROM animals`;
-    let whereExpressions = [];
-    let queryValues = [];
+  static async get(id){
+    const messageRes = await db.query(`SELECT * FROM messages WHERE id = $1`,
+    [uuid]);
 
-    const { name=undefined, species=undefined, minWeight=undefined, maxWeight=undefined, minAge=undefined, maxAge=undefined,
-            sex=undefined, colorationPattern=undefined, primaryColor=undefined, secondaryColor=undefined,
-            maxPrice=undefined, minPrice=undefined, forSale=undefined } = searchFilters;
-
-    // NEED TO ADD FILTER BY, POSSIBLY BY PASSING THROUGH AN OBJ WITH FITLERBY AND ASC/DESC BOOL?
-
-
-    if (minWeight >= maxWeight) {
-      throw new BadRequestError("Min weight cannot be greater than or equal to max");
-    }
-
-    if (minAge > maxAge) {
-      throw new BadRequestError("Min age cannot be greater than or equal to max");
-    }
-
-    if (minPrice > maxPrice) {
-      throw new BadRequestError("Min price cannot be greater than or equal to max");
-    }
-
-    // For each possible search term, add to whereExpressions and queryValues so
-    // we can generate the right SQL
-
-    if (name !== undefined) {
-      queryValues.push(`%${name}%`);
-      whereExpressions.push(`name ILIKE $${queryValues.length}`);
-    }
-
-    if (species !== undefined) {
-      queryValues.push(`%${species}%`);
-      whereExpressions.push(`species ILIKE $${queryValues.length}`);
-    }
-
-    if (minWeight !== undefined) {
-      queryValues.push(`%${minWeight}%`);
-      whereExpressions.push(`weight < $${queryValues.length}`);
-    }
-
-    if (maxWeight !== undefined) {
-      queryValues.push(`%${maxWeight}%`);
-      whereExpressions.push(`weight > $${queryValues.length}`);
-    }
-
-    if (minAge !== undefined) {
-      queryValues.push(`%${minAge}%`);
-      whereExpressions.push(`age > $${queryValues.length}`);
-    }
-
-    if (maxAge !== undefined) {
-      queryValues.push(`%${maxAge}%`);
-      whereExpressions.push(`age < $${queryValues.length}`);
-    }
-
-    if (minPrice !== undefined) {
-      queryValues.push(`%${minPrice}%`);
-      whereExpressions.push(`age > $${queryValues.length}`);
-    }
-
-    if (maxPrice !== undefined) {
-      queryValues.push(`%${maxPrice}%`);
-      whereExpressions.push(`age < $${queryValues.length}`);
-    }
-
-    if (sex !== undefined) {
-      queryValues.push(`%${sex}%`);
-      whereExpressions.push(`sex ILIKE $${queryValues.length}`);
-    }
-
-    if (colorationPattern !== undefined) {
-      queryValues.push(`%${colorationPattern}%`);
-      whereExpressions.push(`coloration_pattern ILIKE $${queryValues.length}`);
-    }
-
-    if (primaryColor !== undefined) {
-      queryValues.push(`%${primaryColor}%`);
-      whereExpressions.push(`primary_color ILIKE $${queryValues.length}`);
-    }
-
-    if (secondaryColor !== undefined) {
-      queryValues.push(`%${secondaryColor}%`);
-      whereExpressions.push(`secondary_color ILIKE $${queryValues.length}`);
-    }
-
-    if (forSale !== undefined) {
-      queryValues.push(`%${forSale}%`);
-      whereExpressions.push(`for_sale ILIKE $${queryValues.length}`);
-    }
-
-    if (whereExpressions.length > 0) {
-      query += " WHERE " + whereExpressions.join(" AND ");
-    }
-
-    // Finalize query and return results
-
-    query += " ORDER BY name";
-    const companiesRes = await db.query(query, queryValues);
-    return companiesRes.rows;
+    const message = messageRes.rows[0]
   }
 
-  /** Given an animal id, return data about that particular animal.
-   *
-   * Returns { id, name, species, weight, age, sex, colorationPattern, primaryColor, secondaryColor, price, forSale, [...parents], [...children] }
-   * 
-   * Calls findParents and findChildren below
-   *
-   * Throws NotFoundError if not found.
-   **/
+  static async getAllMessages(){
 
-  static async get(id) {
-    const animalRes = await db.query(
-          `SELECT id,
-                  name,
-                  species,
-                  weight,
-                  age,
-                  sex,
-                  coloration_pattern AS "colorationPattern",
-                  primary_color AS "primaryColor",
-                  secondary_color AS "secondaryColor",
-                  price,
-                  for_sale AS "forSale",
-                  img_url AS "imgUrl"
-           FROM animals
-           WHERE id = $1`,
-        [id]);
+    let uuids = [];
+    let allMessageThreads = [];
+    const allUuidRes = await db.query(`SELECT uuid FROM message_threads`)
+    uuids = allUuidRes.rows
 
-    const animal = animalRes.rows[0];
+    for (i=0;i<uuids.length-1;i++){
+      const messageThreadRes = await db.query(`SELECT * FROM messages WHERE uuid=$1 ORDER BY created_at DESC`, [uuids[i]])
+      let messageThread = {"id": uuids[i], "messages": []}
+      messageThread.messages.push(...messageThreadRes.rows)
+    }
 
-    if (!animal) throw new NotFoundError(`No such animal`);
+    return messageThread;
 
-    const jobsRes = await db.query(
-          `SELECT id, title, salary, equity
-           FROM jobs
-           WHERE company_handle = $1
-           ORDER BY id`,
-        [handle],
-    );
-
-    company.jobs = jobsRes.rows;
-
-    return company;
+    // const messageRes = await db.query(`SELECT * FROM messages
+    //                                    JOIN message_threads ON messages.message_thread_id=message_thread.uuid
+    //                                    GROUP BY uuid
+    //                                    ORDER BY message_thread.updated_at`)
   }
 
-  static async findParents(id){
-    const relationshipRes = await db.query(
-      `SELECT parent_id AS "parentId"
-       FROM parent_children
-       WHERE child_id=$1`,
-    [id]);
+  static async delete(id){
+    const messageRes = await db.query(`DELETE * FROM messages WHERE id = $1 RETURNING id`,
+    [uuid]);
 
-    const parentIds = relationshipRes.rows[0];
-
-    if (!parentIds) throw new NotFoundError(`No parents`);
-
-    return parentIds;
-
-  }
-
-  static async findChildren(id){
-    const relationshipRes = await db.query(
-      `SELECT child_id AS "childId"
-       FROM parent_children
-       WHERE parent_id=$1`,
-    [id]);
-
-    const childrenIds = relationshipRes.rows[0];
-
-    if (!childrenIds) throw new NotFoundError(`No parents`);
-
-    return childrenIds;
-
-  }
-
-  // Adds a parent-child relationship by adding their respective IDs into table
-
-  static async addParentage(parentId, childId){
-    const parentageRes = await db.query(
-      `INSERT INTO parent_children
-      (parent_id, child_id)
-      VALUES ($1, $2)`, [parentId, childId])
-  };
-
-  /** Update company data with `data`.
-   *
-   * This is a "partial update" --- it's fine if data doesn't contain all the
-   * fields; this only changes provided ones.
-   *
-   * Data can include: {name, description, numEmployees, logoUrl}
-   *
-   * Returns {handle, name, description, numEmployees, logoUrl}
-   *
-   * Throws NotFoundError if not found.
-   */
-
-  static async update(id, data) {
-    const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          colorationPattern: "coloration_pattern",
-          primaryColor: "primary_color",
-          secondaryColor: "secondary_color",
-          forSale: "for_sale",
-          imgUrl: "img_url"
-        });
-    const idVarIdx = "$" + (values.length + 1);
-
-    const querySql = `UPDATE animals 
-                      SET ${setCols} 
-                      WHERE id = ${idVarIdx} 
-                      RETURNING id, name, species, weight, age, sex, coloration_pattern AS "colorationPattern",
-                      primary_color AS "primaryColor", secondary_color AS "secondaryColor",
-                      price, for_sale AS "forSale", img_url AS "imgUrl"`;
-    const result = await db.query(querySql, [...values, id]);
-    const animal = result.rows[0];
-
-    if (!animal) throw new NotFoundError(`No such animal with id: ${id}`);
-
-    return animal;
-  }
-
-  /** Delete given company from database; returns undefined.
-   *
-   * Throws NotFoundError if company not found.
-   **/
-
-  static async remove(id) {
-    const result = await db.query(
-          `DELETE
-           FROM animals
-           WHERE id = $1
-           RETURNING name`,
-        [id]);
-    const animal = result.rows[0];
-
-    if (!animal) throw new NotFoundError(`No such animal exists with id: ${id}`);
+    const deletedMessageId = messageRes.rows[0]
   }
 }
 
 
-module.exports = Animal;
+module.exports = Message;
