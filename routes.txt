@@ -19,7 +19,7 @@ GET /messages > ADMIN ONLY returns all message threads (first 100?, sort by aler
 POST /messages > starts a messages thread, returns a unique uuid
 GET /messages/:id > returns that messages thread
 POST /messages/:id > adds message to that thread
-PUT /messages/:id > says that the message thread has been checked
+POST /messages/:id/checked > says that the message thread has been checked
 
 GET /message-threads > returns an array
 GET /messages/alerts

@@ -15,7 +15,7 @@ const messageNewSchema = require("../schemas/messageNew.json");
 const router = new express.Router();
 
 
-router.post("/", ensureAdmin, async function (req, res, next) {
+router.post("/", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, messageNewSchema);
     if (!validator.valid) {
@@ -71,9 +71,17 @@ router.post("/:id", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
+    console.log(req.params.id)
+
+    const messageThread = await MessageThread.getThreadAndMessages(req.params.id);
+
+    await MessageThread.updateMessageThreadAlert(req.params.id)
+
+    console.log(messageThread, "messagethread on retrieval")
+
+    console.log(req.body.sender, req.body.recipient, req.body.messageText, req.params.id)
     
-    const message = await Message.create(req.params.from, req.params.to, req.params.text, req.params.uuid)
-    const messageThread = await MessageThread.getThreadAndMessages(message.uuid);
+    const message = await Message.create(req.body)
     return res.json({ messageThread });
   } catch (err) {
     return next(err);

@@ -13,7 +13,7 @@ CREATE TABLE items (
   name TEXT,
   type TEXT,
   amt_in_stock INTEGER CHECK (amt_in_stock >= 0),
-  price INTEGER CHECK (price >= 0),
+  price DECIMAL(15, 2) CHECK (price >= 0),
   for_sale BOOLEAN NOT NULL DEFAULT false
 );
 
@@ -35,17 +35,18 @@ CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
   name TEXT DEFAULT '',
   species TEXT DEFAULT '',
-  weight INTEGER DEFAULT 0 CHECK (weight > 0),
-  age INTEGER CHECK (age >= 0),
+  weight INTEGER CHECK (weight >= 0),
+  birth_date TEXT DEFAULT '',
   sex TEXT DEFAULT '',
   coloration_pattern TEXT DEFAULT '',
   primary_color TEXT DEFAULT '',
   secondary_color TEXT DEFAULT '',
-  price INTEGER CHECK (price >= 0),
+  price DECIMAL(15, 2) CHECK (price >= 0),
   for_sale BOOLEAN NOT NULL DEFAULT false,
   img_url TEXT DEFAULT ''
 );
 -- Animals are defaulted to not for sale
+-- Could we do a birthdate and then an age that is derived from utc now()-birthdate
 
 CREATE TABLE parent_children (
   parent_id INTEGER

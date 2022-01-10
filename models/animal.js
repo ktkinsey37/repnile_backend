@@ -15,7 +15,7 @@ class Animal {
   static async create({ name,
                         species,
                         weight,
-                        age,
+                        birthDate,
                         sex,
                         colorationPattern,
                         primaryColor,
@@ -26,16 +26,16 @@ class Animal {
 
     const result = await db.query(
           `INSERT INTO animals
-           (name, species, weight, age, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
+           (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING id, name, species, weight, age, sex, coloration_pattern AS "colorationPattern",
+           RETURNING id, name, species, weight, birth_date AS "birthDate", sex, coloration_pattern AS "colorationPattern",
                      primary_color AS "primaryColor", secondary_color AS "secondaryColor",
                      price, for_sale AS "forSale", img_url AS "imgUrl"`,
         [
           name,
           species,
           weight,
-          age,
+          birthDate,
           sex,
           colorationPattern,
           primaryColor,
@@ -56,7 +56,7 @@ class Animal {
    * - name
    * - species
    * - weight
-   * - age
+   * - birthDate
    * - sex
    * - coloration pattern
    * - primary color
@@ -64,7 +64,7 @@ class Animal {
    * - price
    * - for sale
    * 
-   * Returns list of animal objects [{ name, species, weight, age, sex, colorationPattern, primaryColor, secondaryColor, price, forSale }, ...]
+   * Returns list of animal objects [{ name, species, weight, birthDate, sex, colorationPattern, primaryColor, secondaryColor, price, forSale }, ...]
    * */
 
   static async findAll(searchFilters = {}) {
@@ -72,7 +72,7 @@ class Animal {
                         name,
                         species,
                         weight,
-                        age,
+                        birth_date,
                         sex,
                         coloration_pattern AS "colorationPattern",
                         primary_color AS "primaryColor",
@@ -84,7 +84,8 @@ class Animal {
     let whereExpressions = [];
     let queryValues = [];
 
-    const { name=undefined, species=undefined, minWeight=undefined, maxWeight=undefined, minAge=undefined, maxAge=undefined,
+    const { name=undefined, species=undefined, minWeight=undefined, maxWeight=undefined, 
+      // minAge=undefined, maxAge=undefined,
             sex=undefined, colorationPattern=undefined, primaryColor=undefined, secondaryColor=undefined,
             maxPrice=undefined, minPrice=undefined, forSale=undefined } = searchFilters;
 
@@ -95,9 +96,9 @@ class Animal {
       throw new BadRequestError("Min weight cannot be greater than or equal to max");
     }
 
-    if (minAge >= maxAge) {
-      throw new BadRequestError("Min age cannot be greater than or equal to max");
-    }
+    // if (minAge >= maxAge) {
+    //   throw new BadRequestError("Min age cannot be greater than or equal to max");
+    // }
 
     if (minPrice >= maxPrice) {
       throw new BadRequestError("Min price cannot be greater than or equal to max");
@@ -126,24 +127,24 @@ class Animal {
       whereExpressions.push(`weight > $${queryValues.length}`);
     }
 
-    if (minAge !== undefined) {
-      queryValues.push(`%${minAge}%`);
-      whereExpressions.push(`age > $${queryValues.length}`);
-    }
+    // if (minAge !== undefined) {
+    //   queryValues.push(`%${minAge}%`);
+    //   whereExpressions.push(`age > $${queryValues.length}`);
+    // }
 
-    if (maxAge !== undefined) {
-      queryValues.push(`%${maxAge}%`);
-      whereExpressions.push(`age < $${queryValues.length}`);
-    }
+    // if (maxAge !== undefined) {
+    //   queryValues.push(`%${maxAge}%`);
+    //   whereExpressions.push(`age < $${queryValues.length}`);
+    // }
 
     if (minPrice !== undefined) {
       queryValues.push(`%${minPrice}%`);
-      whereExpressions.push(`age > $${queryValues.length}`);
+      whereExpressions.push(`price > $${queryValues.length}`);
     }
 
     if (maxPrice !== undefined) {
       queryValues.push(`%${maxPrice}%`);
-      whereExpressions.push(`age < $${queryValues.length}`);
+      whereExpressions.push(`price < $${queryValues.length}`);
     }
 
     if (sex !== undefined) {
@@ -177,9 +178,11 @@ class Animal {
 
     // Finalize query and return results
 
-    query += " ORDER BY name";
-    const companiesRes = await db.query(query, queryValues);
-    return companiesRes.rows;
+    query += " ORDER BY name;";
+    console.log(query, "****this is query", queryValues, "suqeryvalues")
+    const animalsRes = await db.query(query, queryValues);
+    console.log(animalsRes, "animalsRes")
+    return animalsRes.rows;
   }
 
   /** Given an animal id, return data about that particular animal.
@@ -197,7 +200,7 @@ class Animal {
                   name,
                   species,
                   weight,
-                  age,
+                  birth_date,
                   sex,
                   coloration_pattern AS "colorationPattern",
                   primary_color AS "primaryColor",
@@ -213,17 +216,9 @@ class Animal {
 
     if (!animal) throw new NotFoundError(`No such animal with id: ${id}`);
 
-    // const jobsRes = await db.query(
-    //       `SELECT id, title, salary, equity
-    //        FROM jobs
-    //        WHERE company_handle = $1
-    //        ORDER BY id`,
-    //     [handle],
-    // );
+    // Maybe add parentage in herE?
 
-    // company.jobs = jobsRes.rows;
-
-    // return company;
+    return animal;
   }
 
   static async findParents(id){
@@ -292,7 +287,7 @@ class Animal {
     const querySql = `UPDATE animals 
                       SET ${setCols} 
                       WHERE id = ${idVarIdx} 
-                      RETURNING id, name, species, weight, age, sex, coloration_pattern AS "colorationPattern",
+                      RETURNING id, name, species, weight, birth_date, sex, coloration_pattern AS "colorationPattern",
                       primary_color AS "primaryColor", secondary_color AS "secondaryColor",
                       price, for_sale AS "forSale", img_url AS "imgUrl"`;
     const result = await db.query(querySql, [...values, id]);

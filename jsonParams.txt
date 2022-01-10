@@ -5,7 +5,7 @@ AUTH JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpc0Fkb
 	"species": "gecko",
 	"weight": "1.2 oz",
 	"sex": "male",
-	"age": "2",
+	"birthDate": "2",
 	"price": "1.5",
 	"colorationPattern": "spotted",
 	"primaryColor": "white",

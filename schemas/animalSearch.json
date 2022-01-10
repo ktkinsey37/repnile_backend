@@ -23,20 +23,12 @@
       "type": "string",
       "minLength": 1
     },
-    "minAge": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "maxAge": {
-      "type": "integer",
-      "minimum": 0
-    },
     "minPrice": {
-      "type": "integer",
+      "type": "number",
       "minimum": 0
     },
     "maxPrice": {
-      "type": "integer",
+      "type": "number",
       "minimum": 0
     },
     "coloration": {

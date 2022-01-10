@@ -19,8 +19,11 @@ class Message {
   static async create({ sender, recipient, messageText, messageThreadId }) {
 
     // Try to pull the message thread to either update it if exists, create it if not
+    console.log(sender, recipient, messageText, messageThreadId, "create.message messagethreadid")
 
     const messageThreadRes = await MessageThread.getThreadAndMessages(messageThreadId)
+
+    console.log(messageThreadRes, "mesagethreadres inside message.create")
 
     let messageThread;
 
@@ -77,16 +80,16 @@ class Message {
     uuids = allUuidRes.rows.map((row) => row.uuid)
     console.log(uuids, "uuids")
 
-    for (let i=0;i<uuids.length-1;i++){
+    for (let i=0;i<uuids.length;i++){
       console.log("in the loop")
-      const messageThreadRes = await db.query(`SELECT * FROM messages WHERE uuid=$1 ORDER BY created_at DESC`, [uuids[i]])
+      const messageThreadRes = await db.query(`SELECT * FROM messages WHERE message_thread_id=$1 ORDER BY created_at DESC LIMIT 2`, [uuids[i]])
       let messageThread = {"id": uuids[i], "messages": []}
       console.log(messageThread, "in the loop")
 
       messageThread.messages.push(...messageThreadRes.rows)
       allMessageThreads.push(messageThread)
     }
-
+    console.log(allMessageThreads, "allmessagethreads before returned")
     return allMessageThreads;
 
     // const messageRes = await db.query(`SELECT * FROM messages
