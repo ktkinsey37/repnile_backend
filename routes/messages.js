@@ -22,6 +22,8 @@ router.post("/", async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
+    req.body.messageThreadId = req.body.sender
+    console.log(req.body, "this is req.body inside of post messages")
 
     const message = await Message.create(req.body);
     return res.status(201).json({ message });
@@ -71,7 +73,7 @@ router.post("/:id", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    console.log(req.params.id)
+    console.log(req.params.id, "this is req.params.id inside of messages route")
 
     const messageThread = await MessageThread.getThreadAndMessages(req.params.id);
 
