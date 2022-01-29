@@ -22,7 +22,7 @@ router.post("/", async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    req.body.messageThreadId = req.body.sender
+    req.body.messageThreadId = (req.body.sender == "dina") ? req.body.recipient : req.body.sender
     console.log(req.body, "this is req.body inside of post messages")
 
     const message = await Message.create(req.body);
