@@ -7,43 +7,43 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 /** Related functions for animals */
 
 class Animal {
-
   /** Create an animal (from input form data), update the db, return animal.
-   * 
+   *
    */
 
-  static async create({ name,
-                        species,
-                        weight,
-                        birthDate,
-                        sex,
-                        colorationPattern,
-                        primaryColor,
-                        secondaryColor,
-                        price,
-                        forSale,
-                        imgUrl }) {
-
+  static async create({
+    name,
+    species,
+    weight,
+    birthDate,
+    sex,
+    colorationPattern,
+    primaryColor,
+    secondaryColor,
+    price,
+    forSale,
+    imgUrl,
+  }) {
     const result = await db.query(
-          `INSERT INTO animals
+      `INSERT INTO animals
            (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
            RETURNING id, name, species, weight, birth_date AS "birthDate", sex, coloration_pattern AS "colorationPattern",
                      primary_color AS "primaryColor", secondary_color AS "secondaryColor",
                      price, for_sale AS "forSale", img_url AS "imgUrl"`,
-        [
-          name,
-          species,
-          weight,
-          birthDate,
-          sex,
-          colorationPattern,
-          primaryColor,
-          secondaryColor,
-          price,
-          forSale,
-          imgUrl
-        ],
+      [
+        name,
+        species,
+        weight,
+        birthDate,
+        sex,
+        colorationPattern,
+        primaryColor,
+        secondaryColor,
+        price,
+        forSale,
+        imgUrl,
+      ]
     );
     const animal = result.rows[0];
 
@@ -63,7 +63,7 @@ class Animal {
    * - secondary color
    * - price
    * - for sale
-   * 
+   *
    * Returns list of animal objects [{ name, species, weight, birthDate, sex, colorationPattern, primaryColor, secondaryColor, price, forSale }, ...]
    * */
 
@@ -84,16 +84,27 @@ class Animal {
     let whereExpressions = [];
     let queryValues = [];
 
-    const { name=undefined, species=undefined, minWeight=undefined, maxWeight=undefined, 
+    const {
+      name = undefined,
+      species = undefined,
+      minWeight = undefined,
+      maxWeight = undefined,
       // minAge=undefined, maxAge=undefined,
-            sex=undefined, colorationPattern=undefined, primaryColor=undefined, secondaryColor=undefined,
-            maxPrice=undefined, minPrice=undefined, forSale=undefined } = searchFilters;
+      sex = undefined,
+      colorationPattern = undefined,
+      primaryColor = undefined,
+      secondaryColor = undefined,
+      maxPrice = undefined,
+      minPrice = undefined,
+      forSale = undefined,
+    } = searchFilters;
 
     // NEED TO ADD FILTER BY, POSSIBLY BY PASSING THROUGH AN OBJ WITH FITLERBY AND ASC/DESC BOOL?
 
-
     if (minWeight >= maxWeight) {
-      throw new BadRequestError("Min weight cannot be greater than or equal to max");
+      throw new BadRequestError(
+        "Min weight cannot be greater than or equal to max"
+      );
     }
 
     // if (minAge >= maxAge) {
@@ -101,7 +112,9 @@ class Animal {
     // }
 
     if (minPrice >= maxPrice) {
-      throw new BadRequestError("Min price cannot be greater than or equal to max");
+      throw new BadRequestError(
+        "Min price cannot be greater than or equal to max"
+      );
     }
 
     // For each possible search term, add to whereExpressions and queryValues so
@@ -179,16 +192,16 @@ class Animal {
     // Finalize query and return results
 
     query += " ORDER BY name;";
-    console.log(query, "****this is query", queryValues, "suqeryvalues")
+    //console.log(query, "****this is query", queryValues, "suqeryvalues")
     const animalsRes = await db.query(query, queryValues);
-    console.log(animalsRes, "animalsRes")
+    //console.log(animalsRes, "animalsRes")
     return animalsRes.rows;
   }
 
   /** Given an animal id, return data about that particular animal.
    *
    * Returns { id, name, species, weight, age, sex, colorationPattern, primaryColor, secondaryColor, price, forSale, [...parents], [...children] }
-   * 
+   *
    * Calls findParents and findChildren below
    *
    * Throws NotFoundError if not found.
@@ -196,7 +209,7 @@ class Animal {
 
   static async get(id) {
     const animalRes = await db.query(
-          `SELECT id,
+      `SELECT id,
                   name,
                   species,
                   weight,
@@ -210,7 +223,8 @@ class Animal {
                   img_url AS "imgUrl"
            FROM animals
            WHERE id = $1`,
-        [id]);
+      [id]
+    );
 
     const animal = animalRes.rows[0];
 
@@ -221,44 +235,46 @@ class Animal {
     return animal;
   }
 
-  static async findParents(id){
+  static async findParents(id) {
     const relationshipRes = await db.query(
       `SELECT parent_id AS "parentId"
        FROM parent_children
        WHERE child_id=$1`,
-    [id]);
+      [id]
+    );
 
     const parentIds = relationshipRes.rows[0];
 
     if (!parentIds) throw new NotFoundError(`No parents`);
 
     return parentIds;
-
   }
 
-  static async findChildren(id){
+  static async findChildren(id) {
     const relationshipRes = await db.query(
       `SELECT child_id AS "childId"
        FROM parent_children
        WHERE parent_id=$1`,
-    [id]);
+      [id]
+    );
 
     const childrenIds = relationshipRes.rows[0];
 
     if (!childrenIds) throw new NotFoundError(`No parents`);
 
     return childrenIds;
-
   }
 
   // Adds a parent-child relationship by adding their respective IDs into table
 
-  static async addParentage(parentId, childId){
+  static async addParentage(parentId, childId) {
     const parentageRes = await db.query(
       `INSERT INTO parent_children
       (parent_id, child_id)
-      VALUES ($1, $2)`, [parentId, childId])
-  };
+      VALUES ($1, $2)`,
+      [parentId, childId]
+    );
+  }
 
   /** Update company data with `data`.
    *
@@ -273,15 +289,13 @@ class Animal {
    */
 
   static async update(id, data) {
-    const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          colorationPattern: "coloration_pattern",
-          primaryColor: "primary_color",
-          secondaryColor: "secondary_color",
-          forSale: "for_sale",
-          imgUrl: "img_url"
-        });
+    const { setCols, values } = sqlForPartialUpdate(data, {
+      colorationPattern: "coloration_pattern",
+      primaryColor: "primary_color",
+      secondaryColor: "secondary_color",
+      forSale: "for_sale",
+      imgUrl: "img_url",
+    });
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `UPDATE animals 
@@ -305,16 +319,17 @@ class Animal {
 
   static async remove(id) {
     const result = await db.query(
-          `DELETE
+      `DELETE
            FROM animals
            WHERE id = $1
            RETURNING name`,
-        [id]);
+      [id]
+    );
     const animal = result.rows[0];
 
-    if (!animal) throw new NotFoundError(`No such animal exists with id: ${id}`);
+    if (!animal)
+      throw new NotFoundError(`No such animal exists with id: ${id}`);
   }
 }
-
 
 module.exports = Animal;

@@ -14,7 +14,6 @@ const animalNewSchema = require("../schemas/animalNew.json");
 
 const router = new express.Router();
 
-
 /** POST / { company } =>  { company }
  *
  * company should be { handle, name, description, numEmployees, logoUrl }
@@ -23,21 +22,40 @@ const router = new express.Router();
  *
  * Authorization required: admin
  */
+const multer = require("multer");
 
-router.post("/", ensureAdmin, async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, animalNewSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
-
-    const animal = await Animal.create(req.body);
-    return res.status(201).json({ animal });
-  } catch (err) {
-    return next(err);
-  }
+let storage = multer.diskStorage({
+  destination: "../photos/",
+  filename: function (req, file, cb) {
+    //req.body is empty...
+    //How could I get the new_file_name property sent from client here?
+    cb(null, Date.now() + file.originalname);
+  },
 });
+
+let upload = multer({ storage: storage });
+
+router.post(
+  "/",
+  ensureAdmin,
+  upload.single("imgUrl"),
+  async (req, res, next) => {
+    try {
+      console.log(req.body);
+      console.log(req.file);
+      const validator = jsonschema.validate(req.body, animalNewSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+
+      const animal = await Animal.create(req.body);
+      return res.status(201).json({ animal });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
 /** GET /  =>
  *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
@@ -63,7 +81,7 @@ router.get("/", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(q, animalSearchSchema);
     if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
+      const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
@@ -106,7 +124,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, animalUpdateSchema);
     if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
+      const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
@@ -131,6 +149,4 @@ router.delete("/:id", ensureAdmin, async function (req, res, next) {
   }
 });
 
-
 module.exports = router;
- 
