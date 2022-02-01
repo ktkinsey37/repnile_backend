@@ -9,6 +9,7 @@ const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
 const Animal = require("../models/animal");
 
+const animalUpdateSchema = require("../schemas/animalUpdate.json");
 const animalSearchSchema = require("../schemas/animalSearch.json");
 const animalNewSchema = require("../schemas/animalNew.json");
 

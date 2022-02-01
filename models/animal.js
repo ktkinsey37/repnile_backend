@@ -276,6 +276,7 @@ class Animal {
     const { setCols, values } = sqlForPartialUpdate(
         data,
         {
+          birthDate: "birth_date",
           colorationPattern: "coloration_pattern",
           primaryColor: "primary_color",
           secondaryColor: "secondary_color",
@@ -295,6 +296,7 @@ class Animal {
 
     if (!animal) throw new NotFoundError(`No such animal with id: ${id}`);
 
+    console.log(animal, "this is animal right before return in animal.js update")
     return animal;
   }
 
