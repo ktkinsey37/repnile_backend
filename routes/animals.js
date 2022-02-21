@@ -26,11 +26,11 @@ const router = new express.Router();
 const multer = require("multer");
 
 let storage = multer.diskStorage({
-  destination: "../photos/",
+  destination: "./photos/",
   filename: function (req, file, cb) {
     //req.body is empty...
     //How could I get the new_file_name property sent from client here?
-    cb(null, Date.now() + file.originalname);
+    cb(null, Date.now() + file.originalname.replace(/ /g, ""));
   },
 });
 
@@ -42,8 +42,9 @@ router.post(
   upload.single("imgUrl"),
   async (req, res, next) => {
     try {
-      console.log(req.body);
-      console.log(req.file);
+      req.body["imgUrl"] = req.file.filename ? req.file.filename : "";
+      req.body["forSale"] = req.body["forSale"] == "true" ? true : false;
+
       const validator = jsonschema.validate(req.body, animalNewSchema);
       if (!validator.valid) {
         const errs = validator.errors.map((e) => e.stack);

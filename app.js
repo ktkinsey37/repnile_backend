@@ -16,6 +16,7 @@ const messagesRoutes = require("./routes/messages");
 const morgan = require("morgan");
 
 const app = express();
+app.use(express.static(__dirname + "/photos"));
 
 app.use(cors());
 app.use(express.json());
@@ -26,7 +27,6 @@ app.use("/auth", authRoutes);
 app.use("/animals", animalsRoutes);
 app.use("/messages", messagesRoutes);
 // app.use("/items", itemsRoutes)
-
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
