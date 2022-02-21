@@ -289,26 +289,14 @@ class Animal {
    */
 
   static async update(id, data) {
-<<<<<<< HEAD
-    const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          birthDate: "birth_date",
-          colorationPattern: "coloration_pattern",
-          primaryColor: "primary_color",
-          secondaryColor: "secondary_color",
-          forSale: "for_sale",
-          imgUrl: "img_url"
-        });
-=======
     const { setCols, values } = sqlForPartialUpdate(data, {
+      birthDate: "birth_date",
       colorationPattern: "coloration_pattern",
       primaryColor: "primary_color",
       secondaryColor: "secondary_color",
       forSale: "for_sale",
       imgUrl: "img_url",
     });
->>>>>>> 9506934f2e2289a3a7ee285f70450316fc1cb7f5
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `UPDATE animals 
@@ -322,7 +310,10 @@ class Animal {
 
     if (!animal) throw new NotFoundError(`No such animal with id: ${id}`);
 
-    console.log(animal, "this is animal right before return in animal.js update")
+    console.log(
+      animal,
+      "this is animal right before return in animal.js update"
+    );
     return animal;
   }
 
