@@ -12,9 +12,11 @@ CREATE TABLE items (
   id SERIAL PRIMARY KEY,
   name TEXT,
   type TEXT,
-  amt_in_stock INTEGER CHECK (amt_in_stock >= 0),
+  description TEXT,
+  stock INTEGER CHECK (amt_in_stock >= 0),
   price DECIMAL(15, 2) CHECK (price >= 0),
-  for_sale BOOLEAN NOT NULL DEFAULT false
+  for_sale BOOLEAN NOT NULL DEFAULT false,
+  img_url TEXT DEFAULT ''
 );
 
 -- Users table, first name and last name left out for now.
@@ -63,6 +65,13 @@ CREATE TABLE message_threads (
   last_checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE events (
+  id SERIAL PRIMARY KEY,
+  title TEXT,
+  date TEXT,
+  description TEXT
+);
+
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -71,4 +80,4 @@ CREATE TABLE messages (
   message_text TEXT,
   message_thread_id TEXT
     REFERENCES message_threads ON DELETE CASCADE
-)
+);
