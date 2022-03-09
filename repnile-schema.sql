@@ -33,6 +33,18 @@ CREATE TABLE users (
 -- $2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy is "password" properly hashed
 INSERT INTO users (username, password, email, is_admin) VALUES ('test', '$2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy', 'email@email.com', true);
 
+CREATE TABLE animal_photos (
+  parent_id INTEGER
+    REFERENCES animals ON DELETE CASCADE,
+  img_url TEXT DEFAULT ''
+)
+
+CREATE TABLE item_photos (
+  parent_id INTEGER
+    REFERENCES items ON DELETE CASCADE,
+  img_url TEXT DEFAULT ''
+)
+
 CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
   name TEXT DEFAULT '',

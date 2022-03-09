@@ -199,7 +199,7 @@ class Item {
         [id]);
     const item = result.rows[0];
 
-    if (!item) throw new NotFoundError(`No such itemh exists with id: ${id}`);
+    if (!item) throw new NotFoundError(`No such item exists with id: ${id}`);
   }
 }
 
