@@ -7,13 +7,17 @@ DROP TABLE users;
 DROP TABLE messages;
 DROP TABLE message_threads CASCADE;
 DROP TABLE parent_children CASCADE;
+DROP TABLE events;
+DROP TABLE items CASCADE;
+DROP TABLE animal_photos;
+DROP TABLE item_photos;
 
 CREATE TABLE items (
   id SERIAL PRIMARY KEY,
   name TEXT,
   type TEXT,
   description TEXT,
-  stock INTEGER CHECK (amt_in_stock >= 0),
+  stock INTEGER CHECK (stock >= 0),
   price DECIMAL(15, 2) CHECK (price >= 0),
   for_sale BOOLEAN NOT NULL DEFAULT false,
   img_url TEXT DEFAULT ''
@@ -30,21 +34,6 @@ CREATE TABLE users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- $2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy is "password" properly hashed
-INSERT INTO users (username, password, email, is_admin) VALUES ('test', '$2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy', 'email@email.com', true);
-
-CREATE TABLE animal_photos (
-  parent_id INTEGER
-    REFERENCES animals ON DELETE CASCADE,
-  img_url TEXT DEFAULT ''
-)
-
-CREATE TABLE item_photos (
-  parent_id INTEGER
-    REFERENCES items ON DELETE CASCADE,
-  img_url TEXT DEFAULT ''
-)
-
 CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
   name TEXT DEFAULT '',
@@ -58,6 +47,20 @@ CREATE TABLE animals (
   price DECIMAL(15, 2) CHECK (price >= 0),
   for_sale BOOLEAN NOT NULL DEFAULT false,
   img_url TEXT DEFAULT ''
+);
+
+CREATE TABLE animal_photos (
+  parent_id INTEGER
+    REFERENCES animals ON DELETE CASCADE,
+  img_url TEXT DEFAULT '',
+  PRIMARY KEY (parent_id)
+);
+
+CREATE TABLE item_photos (
+  parent_id INTEGER
+    REFERENCES items ON DELETE CASCADE,
+  img_url TEXT DEFAULT '',
+  PRIMARY KEY (parent_id)
 );
 -- Animals are defaulted to not for sale
 -- Could we do a birthdate and then an age that is derived from utc now()-birthdate
@@ -93,3 +96,8 @@ CREATE TABLE messages (
   message_thread_id TEXT
     REFERENCES message_threads ON DELETE CASCADE
 );
+
+
+-- $2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy is "password" properly hashed
+INSERT INTO users (username, password, email, is_admin) VALUES ('test', '$2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy', 'email@email.com', true);
+INSERT INTO events (title, date, description) VALUES ('Big Event!', 'Sometime next month', 'This is a sweet event to do some stuff');
