@@ -39,10 +39,10 @@ let upload = multer({ storage: storage });
 router.post(
   "/",
   ensureAdmin,
-  upload.single("imgUrl"),
+  upload.array("imgUrl"),
   async (req, res, next) => {
     try {
-      req.body["imgUrl"] = req.file.filename ? req.file.filename : "";
+      req.body["imgUrl"] = req.files.map((file) => file.filename);
       req.body["forSale"] = req.body["forSale"] == "true" ? true : false;
 
       const validator = jsonschema.validate(req.body, animalNewSchema);
