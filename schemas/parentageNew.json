@@ -3,15 +3,11 @@
     "$id": "http://our.company.com/companyNew.schema.json",
     "type": "object",
     "properties": {
-      "title": {
+      "parent": {
         "type": "string",
         "minLength": 1
       },
-      "date": {
-        "type": "string",
-        "minLength": 1
-      },
-      "description": {
+      "child": {
         "type": "string",
         "minLength": 1
       }

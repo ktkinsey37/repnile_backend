@@ -1,53 +1,36 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "http://our.company.com/companyNew.schema.json",
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "minLength": 1
-      },
-      "species": {
-        "type": "string",
-        "minLength": 1
-      },
-      "weight": {
-        "type": "string",
-        "minLength": 1
-      },
-      "sex": {
-        "type": "string",
-        "minLength": 1
-      },
-      "birthDate": {
-        "type": "string",
-        "minLength": 1
-      },
-      "price": {
-        "type": "string",
-        "minLength": 1
-      },
-      "colorationPattern": {
-        "type": "string",
-        "minLength": 1
-      },
-      "primaryColor": {
-        "type": "string",
-        "minLength": 1
-      },
-      "secondaryColor": {
-        "type": "string",
-        "minLength": 1
-      },
-      "forSale": {
-        "type": "boolean"
-      },
-      "imgUrl": {
-        "type": "string"
-      }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://our.company.com/companyNew.schema.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
     },
-    "additionalProperties": false,
-    "required": [
-    ]
-  }
-  
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stock": {
+      "type": "string",
+      "minLength": 1
+    },
+    "price": {
+      "type": "string",
+      "minLength": 1
+    },
+    "forSale": {
+      "type": "boolean"
+    },
+    "imgUrl": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+  ]
+}

@@ -38,7 +38,7 @@ CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
   name TEXT DEFAULT '',
   species TEXT DEFAULT '',
-  weight INTEGER CHECK (weight >= 0),
+  weight DECIMAL(15, 2) CHECK (price >= 0),
   birth_date TEXT DEFAULT '',
   sex TEXT DEFAULT '',
   coloration_pattern TEXT DEFAULT '',
@@ -66,11 +66,12 @@ CREATE TABLE item_photos (
 -- Could we do a birthdate and then an age that is derived from utc now()-birthdate
 
 CREATE TABLE parent_children (
-  parent_id INTEGER
-    REFERENCES animals ON DELETE CASCADE,
-  child_id INTEGER
-    REFERENCES animals ON DELETE CASCADE,
-  PRIMARY KEY (parent_id, child_id)
+  parent_id INTEGER,
+    -- REFERENCES animals ON DELETE CASCADE,
+  child_id INTEGER,
+  u_key TEXT UNIQUE
+    -- REFERENCES animals ON DELETE CASCADE
+  -- PRIMARY KEY (parent_id, child_id)
 );
 
 CREATE TABLE message_threads (

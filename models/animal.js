@@ -243,7 +243,7 @@ class Animal {
       [id]
     );
 
-    const parentIds = relationshipRes.rows[0];
+    const parentIds = relationshipRes.rows;
 
     if (!parentIds) throw new NotFoundError(`No parents`);
 
@@ -267,12 +267,15 @@ class Animal {
 
   // Adds a parent-child relationship by adding their respective IDs into table
 
-  static async addParentage(parentId, childId) {
+  static async addParentage(data) {
+
+
+    console.log(data, "this is data in add parentage")
     const parentageRes = await db.query(
       `INSERT INTO parent_children
-      (parent_id, child_id)
-      VALUES ($1, $2)`,
-      [parentId, childId]
+      (parent_id, child_id, u_key)
+      VALUES ($1, $2, $3)`,
+      [data.parent, data.child, `${data.parent}, ${data.child}`]
     );
   }
 

@@ -7,11 +7,11 @@ const express = require("express");
 
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
-const Animal = require("../models/animal");
+const Item = require("../models/item");
 
-const animalUpdateSchema = require("../schemas/animalUpdate.json");
-const animalSearchSchema = require("../schemas/animalSearch.json");
-const animalNewSchema = require("../schemas/animalNew.json");
+const itemUpdateSchema = require("../schemas/itemUpdate.json");
+const itemSearchSchema = require("../schemas/itemSearch.json");
+const itemNewSchema = require("../schemas/itemNew.json");
 
 const router = new express.Router();
 
@@ -42,6 +42,7 @@ router.post(
   upload.single("imgUrl"),
   async (req, res, next) => {
     try {
+      console.log(req.body)
       req.body["imgUrl"] = req.file.filename ? req.file.filename : "";
       req.body["forSale"] = req.body["forSale"] == "true" ? true : false;
 
@@ -73,30 +74,28 @@ router.post(
 router.get("/", async function (req, res, next) {
   const q = req.query;
   // arrive as strings from querystring, but we want as ints
-  if (q.minAge !== undefined) q.minAge = +q.minAge;
-  if (q.maxAge !== undefined) q.maxAge = +q.maxAge;
   if (q.minPrice !== undefined) q.minPrice = +q.minPrice;
   if (q.maxPrice !== undefined) q.maxPrice = +q.maxPrice;
   if (q.minWeight !== undefined) q.minWeight = +q.minWeight;
   if (q.maxWeight !== undefined) q.maxWeight = +q.maxWeight;
 
   try {
-    const validator = jsonschema.validate(q, animalSearchSchema);
+    const validator = jsonschema.validate(q, itemSearchSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const animals = await Animal.findAll(q);
-    return res.json({ animals });
+    const items = await Item.findAll(q);
+    return res.json({ items });
   } catch (err) {
     return next(err);
   }
 });
 
-/** GET /[id]  =>  { animal }
+/** GET /[id]  =>  { item }
  *
- *  Animal is { handle, name, description, numEmployees, logoUrl, jobs }
+ *  Item is { handle, name, description, numEmployees, logoUrl, jobs }
  *   where jobs is [{ id, title, salary, equity }, ...]
  *
  * Authorization required: none
@@ -104,8 +103,8 @@ router.get("/", async function (req, res, next) {
 
 router.get("/:id", async function (req, res, next) {
   try {
-    const animal = await Animal.get(req.params.id);
-    return res.json({ animal });
+    const item = await Item.get(req.params.id);
+    return res.json({ item });
   } catch (err) {
     return next(err);
   }
@@ -124,14 +123,14 @@ router.get("/:id", async function (req, res, next) {
 
 router.patch("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, animalUpdateSchema);
+    const validator = jsonschema.validate(req.body, itemUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const animal = await Animal.update(req.params.id, req.body);
-    return res.json({ animal });
+    const item = await Item.update(req.params.id, req.body);
+    return res.json({ item });
   } catch (err) {
     return next(err);
   }
@@ -144,7 +143,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
 
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    await Animal.remove(req.params.id);
+    await Item.remove(req.params.id);
     return res.json({ deleted: req.params.id });
   } catch (err) {
     return next(err);

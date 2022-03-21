@@ -74,7 +74,7 @@ class Event {
               title,
               date,
               description
-           FROM event
+           FROM events
            WHERE id = $1`,
       [id]
     );

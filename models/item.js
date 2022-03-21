@@ -23,8 +23,8 @@ class Item {
     const result = await db.query(
           `INSERT INTO items
            (name, type, description, stock, price, for_sale, img_url)
-           VALUES ($1, $2, $3, $4, $5, $6)
-           RETURNING id, name, type, description, stock, price, for_sale AS "forSale", image_url AS "imgUrl"`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING id, name, type, description, stock, price, for_sale AS "forSale", img_url AS "imgUrl"`,
         [
           name,
           type,
@@ -148,8 +148,10 @@ class Item {
 
     const item = itemRes.rows[0];
 
-    if (!item) throw new NotFoundError(`No such item`);
 
+
+    if (!item) throw new NotFoundError(`No such item`);
+    return item;
     }
 
   /** Update company data with `data`.

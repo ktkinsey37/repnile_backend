@@ -12,6 +12,7 @@ const Animal = require("../models/animal");
 const animalUpdateSchema = require("../schemas/animalUpdate.json");
 const animalSearchSchema = require("../schemas/animalSearch.json");
 const animalNewSchema = require("../schemas/animalNew.json");
+const addParentageSchema = require("../schemas/parentageNew.json")
 
 const router = new express.Router();
 
@@ -39,10 +40,10 @@ let upload = multer({ storage: storage });
 router.post(
   "/",
   ensureAdmin,
-  upload.array("imgUrl"),
+  upload.single("imgUrl"),
   async (req, res, next) => {
     try {
-      req.body["imgUrl"] = req.files.map((file) => file.filename);
+      req.body["imgUrl"] = req.file.filename ? req.file.filename : "";
       req.body["forSale"] = req.body["forSale"] == "true" ? true : false;
 
       const validator = jsonschema.validate(req.body, animalNewSchema);
@@ -110,6 +111,37 @@ router.get("/:id", async function (req, res, next) {
     return next(err);
   }
 });
+
+
+router.get("/:id/parents", async function (req, res, next) {
+  try {
+    const parentsIds = await Animal.findParents(req.params.id);
+    console.log(parentsIds, "thisis parentsids in getparetns")
+    // let parents = 
+    return res.json({ parentsIds });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.post("/parents", ensureAdmin, async (req, res, next) => {
+    try {
+      const validator = jsonschema.validate(req.body, addParentageSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+
+      console.log(req.body, "this is reqbody in addparentage in the route")
+
+      const parentRes = await Animal.addParentage(req.body);
+      return res.status(201).json({ parentRes });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 
 /** PATCH /[handle] { fld1, fld2, ... } => { company }
  *
