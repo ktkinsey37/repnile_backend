@@ -112,6 +112,31 @@ router.get("/:id", async function (req, res, next) {
   }
 });
 
+router.post(
+  "/:id",
+  ensureAdmin,
+  upload.array("imgCollection", 10),
+  async (req, res, next) => {
+    try {
+      // let reqFiles = [];
+      // for (let i = 0; i < req.files.length; i++) {
+      //   reqFiles.push
+      // }
+
+      // const validator = jsonschema.validate(req.body, animalNewSchema);
+      // if (!validator.valid) {
+      //   const errs = validator.errors.map((e) => e.stack);
+      //   throw new BadRequestError(errs);
+      // }
+
+      const res = await Animal.addImages(req.body);
+      return res.status(201).json({ res });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 
 router.get("/:id/parents", async function (req, res, next) {
   try {
