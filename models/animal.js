@@ -26,23 +26,48 @@ class Animal {
   }) {
     const result = await db.query(
       `INSERT INTO animals
-           (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING id, name, species, weight, birth_date AS "birthDate", sex, coloration_pattern AS "colorationPattern",
-                     primary_color AS "primaryColor", secondary_color AS "secondaryColor",
-                     price, for_sale AS "forSale", img_url AS "imgUrl"`,
+           (name,
+            species,
+            weight_in_grams,
+            hatch_date,
+            sex,
+            morph,
+            base_color,
+            pattern,
+            price,
+            price_with_plan,
+            for_sale,
+            breeder,
+            img_url)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+           RETURNING id,
+                      name,
+                      species,
+                      weight_in_grams AS "weightInGrams",
+                      hatch_date,
+                      sex,
+                      morph,
+                      base_color AS "baseColor",
+                      pattern,
+                      price,
+                      price_with_plan AS "priceWithPlan",
+                      for_sale AS "forSale",
+                      breeder,
+                      img_url AS "imgUrl"`,
       [
         name,
         species,
-        weight,
-        birthDate,
+        weightInGrams,
+        hatchDate,
         sex,
-        colorationPattern,
-        primaryColor,
-        secondaryColor,
+        morph,
+        baseColor,
+        pattern,
         price,
+        priceWithPlan,
         forSale,
-        imgUrl,
+        breeder,
+        imgUrl
       ]
     );
     const animal = result.rows[0];
@@ -95,14 +120,16 @@ class Animal {
     let query = `SELECT id,
                         name,
                         species,
-                        weight,
-                        birth_date,
+                        weight_in_grams AS "weightInGrams",
+                        hatch_date,
                         sex,
-                        coloration_pattern AS "colorationPattern",
-                        primary_color AS "primaryColor",
-                        secondary_color AS "secondaryColor",
+                        morph,
+                        base_color AS "baseColor",
+                        pattern,
                         price,
+                        price_with_plan AS "priceWithPlan",
                         for_sale AS "forSale",
+                        breeder,
                         img_url AS "imgUrl"
                  FROM animals`;
     let whereExpressions = [];
@@ -115,12 +142,11 @@ class Animal {
       maxWeight = undefined,
       // minAge=undefined, maxAge=undefined,
       sex = undefined,
-      colorationPattern = undefined,
-      primaryColor = undefined,
-      secondaryColor = undefined,
+      morph = undefined,
+      baseColor = undefined,
+      pattern = undefined,
       maxPrice = undefined,
-      minPrice = undefined,
-      forSale = undefined,
+      minPrice = undefined
     } = searchFilters;
 
     // NEED TO ADD FILTER BY, POSSIBLY BY PASSING THROUGH AN OBJ WITH FITLERBY AND ASC/DESC BOOL?
@@ -189,25 +215,25 @@ class Animal {
       whereExpressions.push(`sex ILIKE $${queryValues.length}`);
     }
 
-    if (colorationPattern !== undefined) {
-      queryValues.push(`%${colorationPattern}%`);
-      whereExpressions.push(`coloration_pattern ILIKE $${queryValues.length}`);
+    if (morph !== undefined) {
+      queryValues.push(`%${morph}%`);
+      whereExpressions.push(`morph ILIKE $${queryValues.length}`);
     }
 
-    if (primaryColor !== undefined) {
-      queryValues.push(`%${primaryColor}%`);
-      whereExpressions.push(`primary_color ILIKE $${queryValues.length}`);
+    if (baseColor !== undefined) {
+      queryValues.push(`%${baseColor}%`);
+      whereExpressions.push(`base_color ILIKE $${queryValues.length}`);
     }
 
-    if (secondaryColor !== undefined) {
-      queryValues.push(`%${secondaryColor}%`);
-      whereExpressions.push(`secondary_color ILIKE $${queryValues.length}`);
+    if (pattern !== undefined) {
+      queryValues.push(`%${pattern}%`);
+      whereExpressions.push(`pattern ILIKE $${queryValues.length}`);
     }
 
-    if (forSale !== undefined) {
-      queryValues.push(`%${forSale}%`);
-      whereExpressions.push(`for_sale ILIKE $${queryValues.length}`);
-    }
+    // if (forSale !== undefined) {
+    //   queryValues.push(`%${forSale}%`);
+    //   whereExpressions.push(`for_sale ILIKE $${queryValues.length}`);
+    // }
 
     if (whereExpressions.length > 0) {
       query += " WHERE " + whereExpressions.join(" AND ");
@@ -234,19 +260,21 @@ class Animal {
   static async get(id) {
     const animalRes = await db.query(
       `SELECT id,
-                  name,
-                  species,
-                  weight,
-                  birth_date,
-                  sex,
-                  coloration_pattern AS "colorationPattern",
-                  primary_color AS "primaryColor",
-                  secondary_color AS "secondaryColor",
-                  price,
-                  for_sale AS "forSale",
-                  img_url AS "imgUrl"
-           FROM animals
-           WHERE id = $1`,
+              name,
+              species,
+              weight_in_grams AS "weightInGrams",
+              hatch_date,
+              sex,
+              morph,
+              base_color AS "baseColor",
+              pattern,
+              price,
+              price_with_plan AS "priceWithPlan",
+              for_sale AS "forSale",
+              breeder,
+              img_url AS "imgUrl"
+          FROM animals
+          WHERE id = $1`,
       [id]
     );
 
@@ -317,10 +345,9 @@ class Animal {
 
   static async update(id, data) {
     const { setCols, values } = sqlForPartialUpdate(data, {
-      birthDate: "birth_date",
-      colorationPattern: "coloration_pattern",
-      primaryColor: "primary_color",
-      secondaryColor: "secondary_color",
+      hatchDate: "hatch_date",
+      baseColor: "base_color",
+      priceWithPlan: "price_with_plan",
       forSale: "for_sale",
       imgUrl: "img_url",
     });
@@ -329,9 +356,20 @@ class Animal {
     const querySql = `UPDATE animals 
                       SET ${setCols} 
                       WHERE id = ${idVarIdx} 
-                      RETURNING id, name, species, weight, birth_date, sex, coloration_pattern AS "colorationPattern",
-                      primary_color AS "primaryColor", secondary_color AS "secondaryColor",
-                      price, for_sale AS "forSale", img_url AS "imgUrl"`;
+                      RETURNING id,
+                                name,
+                                species,
+                                weight_in_grams AS "weightInGrams",
+                                hatch_date,
+                                sex,
+                                morph,
+                                base_color AS "baseColor",
+                                pattern,
+                                price,
+                                price_with_plan AS "priceWithPlan",
+                                for_sale AS "forSale",
+                                breeder,
+                                img_url AS "imgUrl"`;
     const result = await db.query(querySql, [...values, id]);
     const animal = result.rows[0];
 
