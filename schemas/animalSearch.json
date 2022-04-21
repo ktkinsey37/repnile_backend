@@ -4,11 +4,11 @@
   "type": "object",
   "properties": {
     "minWeight": {
-      "type": "integer",
+      "type": "number",
       "minimum": 0
     },
     "maxWeight": {
-      "type": "integer",
+      "type": "number",
       "minimum": 0
     },
     "name": {
@@ -31,19 +31,22 @@
       "type": "number",
       "minimum": 0
     },
-    "coloration": {
+    "morph": {
       "type": "string",
       "minLength": 1
     },
-    "primaryColor": {
+    "baseColor": {
       "type": "string",
       "minLength": 1
     },
-    "secondaryColor": {
+    "pattern": {
       "type": "string",
       "minLength": 1
     },
     "forSale": {
+      "type": "boolean"
+    },
+    "breeder": {
       "type": "boolean"
     }
   },

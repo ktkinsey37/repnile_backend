@@ -11,7 +11,7 @@
       "type": "string",
       "minLength": 1
     },
-    "weight": {
+    "weightInGrams": {
       "type": "string",
       "minLength": 1
     },
@@ -19,7 +19,7 @@
       "type": "string",
       "minLength": 1
     },
-    "birthDate": {
+    "hatchDate": {
       "type": "string",
       "minLength": 1
     },
@@ -27,19 +27,26 @@
       "type": "string",
       "minLength": 1
     },
-    "colorationPattern": {
+    "priceWithPlan": {
       "type": "string",
       "minLength": 1
     },
-    "primaryColor": {
+    "morph": {
       "type": "string",
       "minLength": 1
     },
-    "secondaryColor": {
+    "baseColor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pattern": {
       "type": "string",
       "minLength": 1
     },
     "forSale": {
+      "type": "boolean"
+    },
+    "breeder": {
       "type": "boolean"
     },
     "imgUrl": {

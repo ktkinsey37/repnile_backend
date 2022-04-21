@@ -11,9 +11,12 @@
       "type": "string",
       "minLength": 1
     },
-    "dsecription": {
+    "description": {
       "type": "string",
       "minLength": 1
+    },
+    "imgUrl": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
