@@ -42,14 +42,16 @@ CREATE TABLE animals (
   id SERIAL PRIMARY KEY,
   name TEXT DEFAULT '',
   species TEXT DEFAULT '',
-  weight DECIMAL(15, 2) CHECK (price >= 0),
-  birth_date TEXT DEFAULT '',
+  weight_in_grams DECIMAL(15, 2) CHECK (price >= 0),
+  hatch_date TEXT DEFAULT '',
   sex TEXT DEFAULT '',
-  coloration_pattern TEXT DEFAULT '',
-  primary_color TEXT DEFAULT '',
-  secondary_color TEXT DEFAULT '',
+  morph TEXT DEFAULT '',
+  base_color TEXT DEFAULT '',
+  pattern TEXT DEFAULT '',
   price DECIMAL(15, 2) CHECK (price >= 0),
+  price_with_plan DECIMAL(15, 2) CHECK (price >= 0),
   for_sale BOOLEAN NOT NULL DEFAULT false,
+  breeder BOOLEAN NOT NULL DEFAULT false,
   img_url TEXT DEFAULT ''
 );
 
@@ -57,14 +59,14 @@ CREATE TABLE animal_photos (
   parent_id INTEGER
     REFERENCES animals ON DELETE CASCADE,
   img_url TEXT DEFAULT '',
-  PRIMARY KEY (parent_id)
+  PRIMARY KEY (img_url)
 );
 
 CREATE TABLE item_photos (
   parent_id INTEGER
     REFERENCES items ON DELETE CASCADE,
   img_url TEXT DEFAULT '',
-  PRIMARY KEY (parent_id)
+  PRIMARY KEY (img_url)
 );
 -- Animals are defaulted to not for sale
 -- Could we do a birthdate and then an age that is derived from utc now()-birthdate
@@ -106,12 +108,12 @@ CREATE TABLE messages (
 -- $2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy is "password" properly hashed
 INSERT INTO users (username, password, email, is_admin) VALUES ('test', '$2b$13$GVihcIDD2GLaD1eS9FxXDuEUeWFSS13xAEpDEkUWcJYApjWvEKCvy', 'email@email.com', true);
 INSERT INTO events (title, date, description) VALUES ('Big Event!', 'Sometime next month', 'This is a sweet event to do some stuff');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Spotty', 'Gecko', 246.00, '01/22/17', 'Male', 'Spotted', 'Blue', 'Yellow', 12.99, true, '1648083588752spottedblueyellow.jpg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Leppy', 'Leopard Gecko', 334.00, '4/13/1990', 'female', 'Leopard', 'Orange', 'White', 75.99, false, '1648083645552leopardorangewhite.jpg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Cinder', 'Gecko', 432.00, '06-15-20', 'Male', 'Splotched', 'Black', 'Orange', 54.88, true, '1648083783228image0(1).jpeg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Tina', 'Desert Gecko', 333.00, '01-22-2020', 'Female', 'Spotted', 'Tan', 'Black', 177.77, true, '1648083850662image1(1).jpeg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Diablo', 'Treecko', 123.00, '8/10/22', 'Male', 'Spotted', 'Black', 'Orange', 8888.99, true, '1648083933210image2(1).jpeg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Licky', 'Gecko', 432.00, '01/01/01', 'Male', 'Desert', 'Tan', 'Black', 999.99, true, '1648083978844image3(1).jpeg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Dotty', 'Gecko', 787.88, '09/09/09', 'Male', 'Spotted', 'Yellow', 'Blue', 9.00, true, '1647873702776112-200x300.jpg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Popp', 'gecko', 455.44, '22/22/22', 'male', 'Trueblue', 'Green', 'Purple', 333.00, true, '1647873690187image0.jpeg');
-INSERT INTO animals (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url) VALUES ( 'Croc', 'crocodile', 2313.00, '21/21/21', 'male', 'Solid', 'green', 'green', 23.00, true, '1647873676101image2.jpeg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Spotty', 'Gecko', 246.00, '01/22/17', 'Male', 'Spotted', 'Blue', 'Yellow', 12.99, 4.99, true, true, '1648083588752spottedblueyellow.jpg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Leppy', 'Leopard Gecko', 334.00, '4/13/1990', 'female', 'Leopard', 'Orange', 'White', 75.99, 12.34, true, false, '1648083645552leopardorangewhite.jpg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Cinder', 'Gecko', 432.00, '06-15-20', 'Male', 'Splotched', 'Black', 'Orange', 54.88, 22.22, false, true, '1648083783228image0(1).jpeg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Tina', 'Desert Gecko', 333.00, '01-22-2020', 'Female', 'Spotted', 'Tan', 'Black', 177.77, 34.99, true, true, '1648083850662image1(1).jpeg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Diablo', 'Treecko', 123.00, '8/10/22', 'Male', 'Spotted', 'Black', 'Orange', 8888.99, 1111.33, true, false, '1648083933210image2(1).jpeg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Licky', 'Gecko', 432.00, '01/01/01', 'Male', 'Desert', 'Tan', 'Black', 999.99, 75.55, true, false, '1648083978844image3(1).jpeg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Dotty', 'Gecko', 787.88, '09/09/09', 'Male', 'Spotted', 'Yellow', 'Blue', 9.00, 9.00, true, true, '1647873702776112-200x300.jpg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Popp', 'gecko', 455.44, '22/22/22', 'male', 'Trueblue', 'Green', 'Purple', 333.00, 123.33, true, false, '1647873690187image0.jpeg');
+INSERT INTO animals (name, species, weight_in_grams, hatch_date, sex, morph, base_color, pattern, price_with_plan, for_sale, breeder, img_url) VALUES ( 'Croc', 'crocodile', 2313.00, '21/21/21', 'male', 'Solid', 'green', 'green', 23.00, 10.00, false, false, '1647873676101image2.jpeg');

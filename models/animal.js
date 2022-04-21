@@ -24,17 +24,6 @@ class Animal {
     forSale,
     imgUrl,
   }) {
-    console.log(        name,
-      species,
-      weight,
-      birthDate,
-      sex,
-      colorationPattern,
-      primaryColor,
-      secondaryColor,
-      price,
-      forSale,
-      imgUrl, "adding animal")
     const result = await db.query(
       `INSERT INTO animals
            (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
@@ -61,26 +50,28 @@ class Animal {
     return animal;
   }
 
-  static async addImages({
-data
-  }) {
+  static async addImages(
+    reqFiles, id
+  ) {
 
-    console.log(data, "this is data in addImages")
+    console.log(reqFiles, id, "this is data in addImages")
+    let res = []
 
-    const result = await db.query(
-      `INSERT INTO animals
-           (name, species, weight, birth_date, sex, coloration_pattern, primary_color, secondary_color, price, for_sale, img_url)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING id, name, species, weight, birth_date AS "birthDate", sex, coloration_pattern AS "colorationPattern",
-                     primary_color AS "primaryColor", secondary_color AS "secondaryColor",
-                     price, for_sale AS "forSale", img_url AS "imgUrl"`,
-      [
-        data
-      ]
-    );
-    const animal = result.rows[0];
+    for (let i = 0; i < reqFiles.length ;i++) {
+      const result = await db.query(
+        `INSERT INTO animal_photos
+             (parent_id, img_url)
+             VALUES ($1, $2)
+             RETURNING img_url AS imgUrl`,
+        [
+          id,
+          reqFiles[i]
+        ]
+      );
+      res.push(result.rows[0])
+    };
 
-    return animal;
+    return res;
   }
 
   /** Find all animals (optional filter on searchFilters).
