@@ -14,6 +14,8 @@ const eventUpdateSchema = require("../schemas/eventUpdate.json");
 const eventNewSchema = require("../schemas/eventNew.json");
 
 const router = new express.Router();
+const multer = require("multer");
+
 
 /** POST / { company } =>  { company }
  *
@@ -25,22 +27,26 @@ const router = new express.Router();
  */
 // const multer = require("multer");
 
-// let storage = multer.diskStorage({
-//   destination: "./photos/",
-//   filename: function (req, file, cb) {
-//     //req.body is empty...
-//     //How could I get the new_file_name property sent from client here?
-//     cb(null, Date.now() + file.originalname.replace(/ /g, ""));
-//   },
-// });
+let storage = multer.diskStorage({
+  destination: "./photos/",
+  filename: function (req, file, cb) {
+    //req.body is empty...
+    //How could I get the new_file_name property sent from client here?
+    cb(null, Date.now() + file.originalname.replace(/ /g, ""));
+  },
+});
 
-// let upload = multer({ storage: storage });
+let upload = multer({ storage: storage });
 
 router.post(
   "/",
   ensureAdmin,
+  upload.single("imgUrl"),
   async (req, res, next) => {
     try {
+      console.log(req.body, "here is EVENT REQ.BODY")
+      req.body["imgUrl"] = req.file.filename ? req.file.filename : "";
+
       const validator = jsonschema.validate(req.body, eventNewSchema);
       if (!validator.valid) {
         const errs = validator.errors.map((e) => e.stack);

@@ -45,6 +45,8 @@ router.post(
     try {
       req.body["imgUrl"] = req.file.filename ? req.file.filename : "";
       req.body["forSale"] = req.body["forSale"] == "true" ? true : false;
+      req.body["breeder"] = req.body["breeder"] == "true" ? true : false;
+
 
       const validator = jsonschema.validate(req.body, animalNewSchema);
       if (!validator.valid) {
@@ -89,6 +91,33 @@ router.get("/", async function (req, res, next) {
     }
 
     const animals = await Animal.findAll(q);
+    return res.json({ animals });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/breeders", async function (req, res, next) {
+  try {
+    const animals = await Animal.getBreeders();
+    return res.json({ animals });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/forsale", async function (req, res, next) {
+  try {
+    const animals = await Animal.getForSale();
+    return res.json({ animals });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/notforsale", async function (req, res, next) {
+  try {
+    const animals = await Animal.getNotForSale();
     return res.json({ animals });
   } catch (err) {
     return next(err);
@@ -204,6 +233,15 @@ router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
     await Animal.remove(req.params.id);
     return res.json({ deleted: req.params.id });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.delete("/image/:imgUrl", ensureAdmin, async function (req, res, next) {
+  try {
+    await Animal.removePhoto(req.params.imgUrl);
+    return;
   } catch (err) {
     return next(err);
   }

@@ -1,6 +1,7 @@
 "use strict";
 
 const db = require("../db");
+const fs = require('fs')
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
@@ -14,14 +15,16 @@ class Animal {
   static async create({
     name,
     species,
-    weight,
-    birthDate,
+    weightInGrams,
+    hatchDate,
     sex,
-    colorationPattern,
-    primaryColor,
-    secondaryColor,
+    morph,
+    baseColor,
+    pattern,
     price,
+    priceWithPlan,
     forSale,
+    breeder,
     imgUrl,
   }) {
     const result = await db.query(
@@ -280,6 +283,21 @@ class Animal {
 
     const animal = animalRes.rows[0];
 
+    const animalPhotosRes = await db.query(
+      `SELECT img_url AS "imgUrl"
+          FROM animal_photos
+          WHERE parent_id = $1`,
+      [id]
+    );
+
+    animal.photos = []
+
+    for (let i = 0; i < animalPhotosRes.rows.length; i++){
+      animal.photos.push(animalPhotosRes.rows[i].imgUrl)
+    }
+
+    console.log(animal)
+
     if (!animal) throw new NotFoundError(`No such animal with id: ${id}`);
 
     // Maybe add parentage in herE?
@@ -343,10 +361,79 @@ class Animal {
    * Throws NotFoundError if not found.
    */
 
+  static async getBreeders() {
+    const result = await db.query(
+      `SELECT id,
+              name,
+              species,
+              weight_in_grams AS "weightInGrams",
+              hatch_date,
+              sex,
+              morph,
+              base_color AS "baseColor",
+              pattern,
+              price,
+              price_with_plan AS "priceWithPlan",
+              for_sale AS "forSale",
+              breeder,
+              img_url AS "imgUrl"
+           FROM animals
+           WHERE breeder = true;`
+    );
+    console.log(result.rows, "this is getbreeders sql result")
+    return result.rows
+  }
+
+  static async getForSale() {
+    const result = await db.query(
+      `SELECT id,
+              name,
+              species,
+              weight_in_grams AS "weightInGrams",
+              hatch_date,
+              sex,
+              morph,
+              base_color AS "baseColor",
+              pattern,
+              price,
+              price_with_plan AS "priceWithPlan",
+              for_sale AS "forSale",
+              breeder,
+              img_url AS "imgUrl"
+            FROM animals
+            WHERE for_sale = true;`
+    );
+    console.log(result.rows, "this is getforsale sql result")
+    return result.rows
+    }
+  static async getNotForSale() {
+    const result = await db.query(
+      `SELECT id,
+              name,
+              species,
+              weight_in_grams AS "weightInGrams",
+              hatch_date,
+              sex,
+              morph,
+              base_color AS "baseColor",
+              pattern,
+              price,
+              price_with_plan AS "priceWithPlan",
+              for_sale AS "forSale",
+              breeder,
+              img_url AS "imgUrl"
+            FROM animals
+            WHERE for_sale = false;`
+    );
+    console.log(result.rows[0], "this is getnotforsale sql result")
+    return result.rows
+    }
+
   static async update(id, data) {
     const { setCols, values } = sqlForPartialUpdate(data, {
       hatchDate: "hatch_date",
       baseColor: "base_color",
+      weightInGrams: "weight_in_grams",
       priceWithPlan: "price_with_plan",
       forSale: "for_sale",
       imgUrl: "img_url",
@@ -382,12 +469,58 @@ class Animal {
     return animal;
   }
 
+  static async removePhoto(imgUrl){
+
+    const animalPhotosRes = await db.query(
+      `DELETE
+          FROM animal_photos
+          WHERE img_url = $1
+          RETURNING img_url AS imgUrl`,
+      [imgUrl]
+    );
+
+      const path = '../photos/' + imgUrl
+
+      fs.unlink(path, (err) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+      
+        //file removed
+      })
+  }
+
   /** Delete given company from database; returns undefined.
    *
    * Throws NotFoundError if company not found.
    **/
 
   static async remove(id) {
+
+    const basePath = '../photos/'
+
+    const animalPhotosRes = await db.query(
+      `SELECT img_url AS "imgUrl"
+          FROM animal_photos
+          WHERE parent_id = $1`,
+      [id]
+    );
+
+    for (let i = 0; i < animalPhotosRes.rows.length; i++){
+
+      const path = basePath + animalPhotosRes.rows[i].imgUrl
+
+      fs.unlink(path, (err) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+      
+        //file removed
+      })
+    }
+
     const result = await db.query(
       `DELETE
            FROM animals

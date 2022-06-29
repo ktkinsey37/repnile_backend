@@ -14,17 +14,19 @@ class Event {
   static async create({
     title,
     date,
-    description
+    description,
+    imgUrl
   }) {
     const result = await db.query(
       `INSERT INTO events
-           (title, date, description)
-           VALUES ($1, $2, $3)
-           RETURNING id, title, date, description`,
+           (title, date, description, img_url)
+           VALUES ($1, $2, $3, $4)
+           RETURNING id, title, date, description, img_url AS "imgUrl"`,
       [
         title,
         date,
-        description
+        description,
+        imgUrl
       ]
     );
     const event = result.rows[0];
@@ -73,7 +75,8 @@ class Event {
       `SELECT id,
               title,
               date,
-              description
+              description,
+              img_url AS "imgUrl"
            FROM events
            WHERE id = $1`,
       [id]
@@ -101,13 +104,13 @@ class Event {
    */
 
   static async update(id, data) {
-    const { setCols, values } = sqlForPartialUpdate(data, {});
+    const { setCols, values } = sqlForPartialUpdate(data, {imgUrl: "img_url"});
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `UPDATE events 
                       SET ${setCols} 
                       WHERE id = ${id} 
-                      RETURNING title, date, description`;
+                      RETURNING title, date, description, img_url AS "imgUrl"`;
     const result = await db.query(querySql, [...values, id]);
     const event = result.rows[0];
 
