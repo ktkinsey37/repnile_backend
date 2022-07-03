@@ -76,12 +76,12 @@ router.post(
 router.get("/", async function (req, res, next) {
   const q = req.query;
   // arrive as strings from querystring, but we want as ints
-  if (q.minAge !== undefined) q.minAge = +q.minAge;
-  if (q.maxAge !== undefined) q.maxAge = +q.maxAge;
-  if (q.minPrice !== undefined) q.minPrice = +q.minPrice;
-  if (q.maxPrice !== undefined) q.maxPrice = +q.maxPrice;
-  if (q.minWeight !== undefined) q.minWeight = +q.minWeight;
-  if (q.maxWeight !== undefined) q.maxWeight = +q.maxWeight;
+  // if (q.minAge !== undefined) q.minAge = +q.minAge;
+  // if (q.maxAge !== undefined) q.maxAge = +q.maxAge;
+  // if (q.minPrice !== undefined) q.minPrice = +q.minPrice;
+  // if (q.maxPrice !== undefined) q.maxPrice = +q.maxPrice;
+  // if (q.minWeight !== undefined) q.minWeight = +q.minWeight;
+  // if (q.maxWeight !== undefined) q.maxWeight = +q.maxWeight;
 
   try {
     const validator = jsonschema.validate(q, animalSearchSchema);

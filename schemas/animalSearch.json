@@ -3,53 +3,14 @@
   "$id": "http://our.company.com/companySearch.schema.json",
   "type": "object",
   "properties": {
-    "minWeight": {
-      "type": "number",
-      "minimum": 0
-    },
-    "maxWeight": {
-      "type": "number",
-      "minimum": 0
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1
-    },
-    "species": {
-      "type": "string",
-      "minLength": 1
-    },
-    "sex": {
-      "type": "string",
-      "minLength": 1
-    },
-    "minPrice": {
-      "type": "number",
-      "minimum": 0
-    },
-    "maxPrice": {
-      "type": "number",
-      "minimum": 0
-    },
     "morph": {
       "type": "string",
       "minLength": 1
-    },
-    "baseColor": {
-      "type": "string",
-      "minLength": 1
-    },
-    "pattern": {
-      "type": "string",
-      "minLength": 1
-    },
-    "forSale": {
-      "type": "boolean"
-    },
-    "breeder": {
-      "type": "boolean"
     }
   },
   "additionalProperties": false,
   "required": []
 }
+
+
+    

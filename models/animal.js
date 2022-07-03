@@ -139,59 +139,59 @@ class Animal {
     let queryValues = [];
 
     const {
-      name = undefined,
-      species = undefined,
-      minWeight = undefined,
-      maxWeight = undefined,
+      // name = undefined,
+      // species = undefined,
+      // minWeight = undefined,
+      // maxWeight = undefined,
       // minAge=undefined, maxAge=undefined,
-      sex = undefined,
-      morph = undefined,
-      baseColor = undefined,
-      pattern = undefined,
-      maxPrice = undefined,
-      minPrice = undefined
+      // sex = undefined,
+      morph = undefined
+      // baseColor = undefined,
+      // pattern = undefined,
+      // maxPrice = undefined,
+      // minPrice = undefined
     } = searchFilters;
 
     // NEED TO ADD FILTER BY, POSSIBLY BY PASSING THROUGH AN OBJ WITH FITLERBY AND ASC/DESC BOOL?
 
-    if (minWeight >= maxWeight) {
-      throw new BadRequestError(
-        "Min weight cannot be greater than or equal to max"
-      );
-    }
+    // if (minWeight >= maxWeight) {
+    //   throw new BadRequestError(
+    //     "Min weight cannot be greater than or equal to max"
+    //   );
+    // }
 
     // if (minAge >= maxAge) {
     //   throw new BadRequestError("Min age cannot be greater than or equal to max");
     // }
 
-    if (minPrice >= maxPrice) {
-      throw new BadRequestError(
-        "Min price cannot be greater than or equal to max"
-      );
-    }
+    // if (minPrice >= maxPrice) {
+    //   throw new BadRequestError(
+    //     "Min price cannot be greater than or equal to max"
+    //   );
+    // }
 
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
 
-    if (name !== undefined) {
-      queryValues.push(`%${name}%`);
-      whereExpressions.push(`name ILIKE $${queryValues.length}`);
-    }
+    // if (name !== undefined) {
+    //   queryValues.push(`%${name}%`);
+    //   whereExpressions.push(`name ILIKE $${queryValues.length}`);
+    // }
 
-    if (species !== undefined) {
-      queryValues.push(`%${species}%`);
-      whereExpressions.push(`species ILIKE $${queryValues.length}`);
-    }
+    // if (species !== undefined) {
+    //   queryValues.push(`%${species}%`);
+    //   whereExpressions.push(`species ILIKE $${queryValues.length}`);
+    // }
 
-    if (minWeight !== undefined) {
-      queryValues.push(`%${minWeight}%`);
-      whereExpressions.push(`weight < $${queryValues.length}`);
-    }
+    // if (minWeight !== undefined) {
+    //   queryValues.push(`%${minWeight}%`);
+    //   whereExpressions.push(`weight < $${queryValues.length}`);
+    // }
 
-    if (maxWeight !== undefined) {
-      queryValues.push(`%${maxWeight}%`);
-      whereExpressions.push(`weight > $${queryValues.length}`);
-    }
+    // if (maxWeight !== undefined) {
+    //   queryValues.push(`%${maxWeight}%`);
+    //   whereExpressions.push(`weight > $${queryValues.length}`);
+    // }
 
     // if (minAge !== undefined) {
     //   queryValues.push(`%${minAge}%`);
@@ -203,35 +203,35 @@ class Animal {
     //   whereExpressions.push(`age < $${queryValues.length}`);
     // }
 
-    if (minPrice !== undefined) {
-      queryValues.push(`%${minPrice}%`);
-      whereExpressions.push(`price > $${queryValues.length}`);
-    }
+    // if (minPrice !== undefined) {
+    //   queryValues.push(`%${minPrice}%`);
+    //   whereExpressions.push(`price > $${queryValues.length}`);
+    // }
 
-    if (maxPrice !== undefined) {
-      queryValues.push(`%${maxPrice}%`);
-      whereExpressions.push(`price < $${queryValues.length}`);
-    }
+    // if (maxPrice !== undefined) {
+    //   queryValues.push(`%${maxPrice}%`);
+    //   whereExpressions.push(`price < $${queryValues.length}`);
+    // }
 
-    if (sex !== undefined) {
-      queryValues.push(`%${sex}%`);
-      whereExpressions.push(`sex ILIKE $${queryValues.length}`);
-    }
+    // if (sex !== undefined) {
+    //   queryValues.push(`%${sex}%`);
+    //   whereExpressions.push(`sex ILIKE $${queryValues.length}`);
+    // }
 
     if (morph !== undefined) {
       queryValues.push(`%${morph}%`);
       whereExpressions.push(`morph ILIKE $${queryValues.length}`);
     }
 
-    if (baseColor !== undefined) {
-      queryValues.push(`%${baseColor}%`);
-      whereExpressions.push(`base_color ILIKE $${queryValues.length}`);
-    }
+    // if (baseColor !== undefined) {
+    //   queryValues.push(`%${baseColor}%`);
+    //   whereExpressions.push(`base_color ILIKE $${queryValues.length}`);
+    // }
 
-    if (pattern !== undefined) {
-      queryValues.push(`%${pattern}%`);
-      whereExpressions.push(`pattern ILIKE $${queryValues.length}`);
-    }
+    // if (pattern !== undefined) {
+    //   queryValues.push(`%${pattern}%`);
+    //   whereExpressions.push(`pattern ILIKE $${queryValues.length}`);
+    // }
 
     // if (forSale !== undefined) {
     //   queryValues.push(`%${forSale}%`);
